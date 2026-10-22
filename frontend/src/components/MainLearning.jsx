@@ -116,16 +116,7 @@ export default function MainLearning() {
     <div className="dual-panel">
       {/* Left Panel */}
       <div className="panel animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        <div style={{ 
-          display: 'flex', 
-          gap: '8px', 
-          marginBottom: '14px', 
-          overflowX: 'auto', 
-          flexWrap: 'nowrap', 
-          paddingBottom: '6px',
-          WebkitOverflowScrolling: 'touch',
-          scrollbarWidth: 'none'
-        }}>
+        <div className="main-learning-tabs">
           <TabButton active={activeTab === 'lessons'} onClick={() => setActiveTab('lessons')}>📖 Lessons</TabButton>
           <TabButton active={activeTab === 'ai'} onClick={() => setActiveTab('ai')}>🤖 AI Tutor</TabButton>
           <TabButton active={activeTab === 'visualizer'} onClick={() => setActiveTab('visualizer')}>📊 Visualizer</TabButton>
@@ -372,8 +363,8 @@ export default function MainLearning() {
                   </div>
                 )}
 
-                {/* Mobile Quick Jump to Editor Button */}
-                <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'center' }}>
+                {/* Mobile Quick Jump to Editor Button (hidden on laptop/desktop) */}
+                <div className="mobile-only-jump-btn" style={{ marginTop: '16px', display: 'flex', justifyContent: 'center' }}>
                   <button
                     onClick={() => {
                       const editorElem = document.getElementById('code-editor-panel');

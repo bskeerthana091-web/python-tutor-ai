@@ -169,6 +169,14 @@ body {
   height: calc(100vh - 70px);
 }
 
+/* Main learning tab bar */
+.main-learning-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
 /* Responsive Mobile Rules */
 @media (max-width: 768px) {
   .nav-bar {
@@ -183,6 +191,25 @@ body {
 
   .nav-mobile-toggle {
     display: flex !important;
+  }
+
+  /* 3x2 Grid on Mobile so all 6 feature tabs are 100% visible and aligned */
+  .main-learning-tabs {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .main-learning-tabs > button {
+    width: 100% !important;
+    padding: 8px 4px !important;
+    font-size: 0.76rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .dual-panel {
@@ -247,6 +274,11 @@ body {
 
 @media (min-width: 769px) {
   .nav-mobile-toggle {
+    display: none !important;
+  }
+
+  /* Hide jump button on laptops/desktops where editor is side-by-side */
+  .mobile-only-jump-btn {
     display: none !important;
   }
 }

@@ -253,7 +253,7 @@ export default function InteractiveVisualizer({ code, setCode }) {
       </div>
 
       {/* Subtab Toggle (Stepper vs Flowchart) */}
-      <div style={{ display: 'flex', background: 'rgba(15, 23, 42, 0.4)', borderBottom: '1px solid var(--border)', padding: '6px 20px', gap: '10px' }}>
+      <div style={{ display: 'flex', background: 'rgba(15, 23, 42, 0.4)', borderBottom: '1px solid var(--border)', padding: '6px 20px', gap: '10px', flexWrap: 'wrap' }}>
         <button
           onClick={() => setSubTab('stepper')}
           style={{
@@ -268,7 +268,9 @@ export default function InteractiveVisualizer({ code, setCode }) {
             transition: 'all 0.2s',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px'
+            justifyContent: 'center',
+            gap: '6px',
+            flex: '1 1 140px'
           }}
         >
           <span>▶️</span> Step-by-Step Stepper ({steps.length} steps)
@@ -287,7 +289,9 @@ export default function InteractiveVisualizer({ code, setCode }) {
             transition: 'all 0.2s',
             display: 'flex',
             alignItems: 'center',
-            gap: '6px'
+            justifyContent: 'center',
+            gap: '6px',
+            flex: '1 1 140px'
           }}
         >
           <span>📊</span> Logic Flowchart ({flow.length} blocks)
@@ -320,7 +324,7 @@ export default function InteractiveVisualizer({ code, setCode }) {
             <div style={{ background: 'rgba(30, 41, 59, 0.7)', borderRadius: '10px', padding: '12px 16px', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                 {/* Step Navigation Buttons */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => setCurrentStepIdx(0)}
                     disabled={currentStepIdx === 0 || steps.length === 0}
@@ -451,20 +455,21 @@ export default function InteractiveVisualizer({ code, setCode }) {
                       key={lineNo}
                       style={{
                         display: 'flex',
-                        padding: '2px 14px',
+                        alignItems: 'center',
+                        padding: '3px 14px',
                         background: isCurrent ? 'rgba(56, 189, 248, 0.18)' : 'transparent',
                         borderLeft: isCurrent ? '4px solid #38bdf8' : '4px solid transparent',
                         transition: 'all 0.15s ease'
                       }}
                     >
-                      <span style={{ width: '36px', color: isCurrent ? '#38bdf8' : '#475569', textAlign: 'right', marginRight: '14px', userSelect: 'none', fontWeight: isCurrent ? 700 : 400 }}>
+                      <span style={{ width: '32px', color: isCurrent ? '#38bdf8' : '#475569', textAlign: 'right', marginRight: '12px', userSelect: 'none', fontWeight: isCurrent ? 700 : 400, flexShrink: 0 }}>
                         {lineNo}
                       </span>
-                      <span style={{ color: isCurrent ? '#f8fafc' : '#cbd5e1', fontWeight: isCurrent ? 600 : 400 }}>
+                      <span style={{ color: isCurrent ? '#f8fafc' : '#cbd5e1', fontWeight: isCurrent ? 600 : 400, whiteSpace: 'pre', overflowX: 'auto', flex: 1 }}>
                         {lineText || ' '}
                       </span>
                       {isCurrent && (
-                        <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: '#38bdf8', fontWeight: 700, paddingLeft: '10px' }}>
+                        <span style={{ marginLeft: '8px', fontSize: '0.7rem', color: '#38bdf8', fontWeight: 700, paddingLeft: '8px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                           ← Next to run
                         </span>
                       )}
