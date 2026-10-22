@@ -11,7 +11,7 @@ import asyncio
 import ast
 import datetime as dt
 
-from database import get_db, Student, Submission, Progress, CompletedChallenge
+from database import get_db, Student, Submission, Progress, CompletedChallenge, CompletedQuest
 from sandbox import execute_code, execute_code_with_test_cases, trace_code_execution
 from plagiarism import PlagiarismDetector, get_embedding, cosine_similarity
 import numpy as np
@@ -1001,6 +1001,12 @@ def save_progress(req: ProgressRequest, db: Session = Depends(get_db)):
     db.commit()
     return {"status": "success"}
 
+class ClaimQuestRequest(BaseModel):
+    email: str
+    quest_id: int
+    xp_reward: int
+    quest_title: str = ""
+
 @app.get("/student/{email}")
 def get_student(email: str, name: str = None, db: Session = Depends(get_db)):
     student = db.query(Student).filter(Student.email == email).first()
@@ -1009,14 +1015,22 @@ def get_student(email: str, name: str = None, db: Session = Depends(get_db)):
         student = Student(
             name=display_name,
             email=email,
-            level="Coder",
-            xp_points=120,
-            badges="First Code",
-            streak_days=3
+            level="Beginner",
+            xp_points=280,
+            badges="First Code,First Steps,Week Warrior",
+            streak_days=4
         )
         db.add(student)
         db.commit()
         db.refresh(student)
+
+    today_str = dt.datetime.utcnow().strftime('%Y-%m-%d')
+    completed_q = db.query(CompletedQuest).filter(
+        CompletedQuest.student_id == student.id,
+        CompletedQuest.completed_date == today_str
+    ).all()
+    claimed_ids = [q.quest_id for q in completed_q]
+
     return {
         "id": student.id,
         "name": student.name,
@@ -1024,11 +1038,102 @@ def get_student(email: str, name: str = None, db: Session = Depends(get_db)):
         "level": student.level,
         "xp": student.xp_points,
         "streak": student.streak_days,
-        "badges": student.badges.split(',') if student.badges else []
+        "badges": [b.strip() for b in student.badges.split(',') if b.strip()],
+        "claimed_quests": claimed_ids
+    }
+
+@app.post("/gamification/claim-quest")
+def claim_quest(req: ClaimQuestRequest, db: Session = Depends(get_db)):
+    student = db.query(Student).filter(Student.email == req.email).first()
+    if not student:
+        display_name = req.email.split('@')[0].capitalize()
+        student = Student(
+            name=display_name,
+            email=req.email,
+            level="Beginner",
+            xp_points=280,
+            badges="First Code,First Steps,Week Warrior",
+            streak_days=4
+        )
+        db.add(student)
+        db.commit()
+        db.refresh(student)
+
+    today_str = dt.datetime.utcnow().strftime('%Y-%m-%d')
+    existing = db.query(CompletedQuest).filter(
+        CompletedQuest.student_id == student.id,
+        CompletedQuest.quest_id == req.quest_id,
+        CompletedQuest.completed_date == today_str
+    ).first()
+
+    if existing:
+        all_claimed = [q.quest_id for q in db.query(CompletedQuest).filter(
+            CompletedQuest.student_id == student.id,
+            CompletedQuest.completed_date == today_str
+        ).all()]
+        return {
+            "status": "already_claimed",
+            "message": "Quest already claimed today!",
+            "xp_gained": 0,
+            "total_xp": student.xp_points,
+            "level": student.level,
+            "badges": [b.strip() for b in student.badges.split(',') if b.strip()],
+            "claimed_quests": all_claimed
+        }
+
+    # Award XP
+    student.xp_points += req.xp_reward
+
+    # Recalculate level
+    if student.xp_points >= 1000:
+        student.level = "Python Master"
+    elif student.xp_points >= 600:
+        student.level = "Advanced Coder"
+    elif student.xp_points >= 300:
+        student.level = "Intermediate Coder"
+    else:
+        student.level = "Beginner Coder"
+
+    # Evaluate badges
+    badges = set([b.strip() for b in student.badges.split(',') if b.strip()])
+    badges.add("First Code")
+    badges.add("First Steps")
+    if student.streak_days >= 4:
+        badges.add("Week Warrior")
+    if student.xp_points >= 350:
+        badges.add("Bug Crusher")
+    if student.xp_points >= 1000:
+        badges.add("Python Master")
+    student.badges = ",".join(badges)
+
+    # Record quest
+    new_quest = CompletedQuest(
+        student_id=student.id,
+        quest_id=req.quest_id,
+        completed_date=today_str,
+        xp_reward=req.xp_reward
+    )
+    db.add(new_quest)
+    db.commit()
+    db.refresh(student)
+
+    all_claimed = [q.quest_id for q in db.query(CompletedQuest).filter(
+        CompletedQuest.student_id == student.id,
+        CompletedQuest.completed_date == today_str
+    ).all()]
+
+    return {
+        "status": "success",
+        "message": f"Successfully claimed +{req.xp_reward} XP!",
+        "xp_gained": req.xp_reward,
+        "total_xp": student.xp_points,
+        "level": student.level,
+        "badges": list(badges),
+        "claimed_quests": all_claimed
     }
 
 @app.post("/gamification")
-def award_xp(student_id: int, action: str, db: Session = Depends(get_db)):
+def award_xp(student_id: int = 1, action: str = "submit_code", db: Session = Depends(get_db)):
     xp_map = {
         "complete_lesson": 10,
         "correct_quiz": 20,
@@ -1046,12 +1151,11 @@ def award_xp(student_id: int, action: str, db: Session = Depends(get_db)):
     student.xp_points += gained
     
     # Check levels
-    if student.xp_points >= 1000: student.level = "Master"
-    elif student.xp_points >= 600: student.level = "Pro"
-    elif student.xp_points >= 300: student.level = "Coder"
-    elif student.xp_points >= 100: student.level = "Beginner"
+    if student.xp_points >= 1000: student.level = "Python Master"
+    elif student.xp_points >= 600: student.level = "Advanced Coder"
+    elif student.xp_points >= 300: student.level = "Intermediate Coder"
+    elif student.xp_points >= 100: student.level = "Beginner Coder"
     
-    # Check badges logic (simplified)
     badges = set(student.badges.split(',')) if student.badges else set()
     if student.xp_points > 10: badges.add("First Code")
     if student.xp_points > 1000: badges.add("Python Master")

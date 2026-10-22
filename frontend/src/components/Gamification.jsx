@@ -6,31 +6,50 @@ export default function Gamification({ user }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [heatmap, setHeatmap] = useState([]);
+  const [celebration, setCelebration] = useState(null);
+  const [claimingId, setClaimingId] = useState(null);
 
-  // Daily Quests State
-  const [quests, setQuests] = useState([
-    { id: 1, text: "Write a Loop to sum numbers from 1 to 10", reward: "50 XP", action: "complete_lesson", completed: false },
-    { id: 2, text: "Solve today's Daily Python Challenge", reward: "100 XP", action: "daily_challenge", completed: false },
-    { id: 3, text: "Score 100% on an Adaptive Python Quiz", reward: "40 XP", action: "correct_quiz", completed: false }
-  ]);
+  const DAILY_QUESTS = [
+    { id: 1, text: "Write a Loop to sum numbers from 1 to 10", rewardText: "+50 XP", rewardXp: 50 },
+    { id: 2, text: "Solve today's Daily Python Challenge", rewardText: "+100 XP", rewardXp: 100 },
+    { id: 3, text: "Score 100% on an Adaptive Python Quiz", rewardText: "+40 XP", rewardXp: 40 }
+  ];
 
   const BADGE_TEMPLATES = {
     "First Code": { icon: "🚀", desc: "Wrote your first Python script", color: "#3b82f6" },
     "First Steps": { icon: "🌱", desc: "Started your coding journey", color: "#60a5fa" },
-    "Week Warrior": { icon: "🔥", desc: "Maintained a 7-day streak", color: "#f59e0b" },
+    "Week Warrior": { icon: "🔥", desc: "Maintained a 4+ day streak", color: "#f59e0b" },
     "Bug Crusher": { icon: "🐛", desc: "Fixed 10 errors with AI", color: "#10b981" },
     "Python Master": { icon: "👑", desc: "Achieved over 1,000 XP points", color: "#8b5cf6" }
   };
 
-  const userEmail = user?.email || localStorage.getItem('userEmail') || 'student@python.ai';
-  const userName = user?.name || localStorage.getItem('userName') || 'Python Learner';
+  const userEmail = user?.email || localStorage.getItem('userEmail') || 'bskeerthana091@gmail.com';
+  const userName = user?.name || localStorage.getItem('userName') || 'Keerthana B S';
+
+  const getTodayStr = () => new Date().toISOString().split('T')[0];
+
+  const [claimedQuestIds, setClaimedQuestIds] = useState(() => {
+    try {
+      const today = getTodayStr();
+      const saved = localStorage.getItem(`pyai_claimed_quests_${userEmail}_${today}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const calculateLevel = (xp) => {
+    if (xp >= 1000) return 'Python Master';
+    if (xp >= 600) return 'Advanced Coder';
+    if (xp >= 300) return 'Intermediate Coder';
+    return 'Beginner';
+  };
 
   const enrichProfile = (raw) => {
-    const xp = Math.max(raw?.xp || 0, 280);
+    const xp = (raw?.xp !== undefined && raw?.xp !== null) ? raw.xp : 280;
     const badges = (raw?.badges && raw.badges.length > 0) ? raw.badges : ['First Code', 'First Steps', 'Week Warrior'];
-    const streak = Math.max(raw?.streak || 0, 4);
-    const level = raw?.level || 'Intermediate Coder';
+    const streak = raw?.streak || 4;
+    const level = raw?.level || calculateLevel(xp);
     return {
       id: raw?.id || 1,
       name: raw?.name || userName,
@@ -50,6 +69,17 @@ export default function Gamification({ user }) {
         const response = await axios.get(`${API_BASE_URL}/student/${encodeURIComponent(userEmail)}?name=${encodeURIComponent(userName)}`);
         if (response.data) {
           setProfile(enrichProfile(response.data));
+          if (Array.isArray(response.data.claimed_quests)) {
+            setClaimedQuestIds(prev => {
+              const combined = Array.from(new Set([...prev, ...response.data.claimed_quests]));
+              try {
+                localStorage.setItem(`pyai_claimed_quests_${userEmail}_${getTodayStr()}`, JSON.stringify(combined));
+              } catch (e) {
+                console.warn(e);
+              }
+              return combined;
+            });
+          }
         } else {
           setProfile(enrichProfile({}));
         }
@@ -63,8 +93,88 @@ export default function Gamification({ user }) {
     fetchProfile();
   }, [userEmail, userName]);
 
-  const triggerQuestComplete = (id) => {
-    setQuests(prev => prev.map(q => q.id === id ? { ...q, completed: true } : q));
+  const claimQuestReward = async (quest) => {
+    if (claimedQuestIds.includes(quest.id) || claimingId) return;
+    setClaimingId(quest.id);
+
+    try {
+      const res = await axios.post(`${API_BASE_URL}/gamification/claim-quest`, {
+        email: userEmail,
+        quest_id: quest.id,
+        xp_reward: quest.rewardXp,
+        quest_title: quest.text
+      });
+
+      const today = getTodayStr();
+      const updatedClaimed = Array.from(new Set([...claimedQuestIds, quest.id]));
+      setClaimedQuestIds(updatedClaimed);
+      try {
+        localStorage.setItem(`pyai_claimed_quests_${userEmail}_${today}`, JSON.stringify(updatedClaimed));
+      } catch (e) {
+        console.warn(e);
+      }
+
+      if (res.data && res.data.total_xp !== undefined) {
+        setProfile(prev => ({
+          ...prev,
+          xp: res.data.total_xp,
+          level: res.data.level || calculateLevel(res.data.total_xp),
+          badges: res.data.badges || prev.badges
+        }));
+      } else {
+        setProfile(prev => {
+          const newXp = prev.xp + quest.rewardXp;
+          return {
+            ...prev,
+            xp: newXp,
+            level: calculateLevel(newXp)
+          };
+        });
+      }
+
+      setCelebration({
+        title: `+${quest.rewardXp} XP Added!`,
+        message: `Successfully completed: "${quest.text}"`,
+        xpGained: quest.rewardXp
+      });
+      setTimeout(() => setCelebration(null), 5000);
+
+    } catch (err) {
+      console.error("Claim quest error fallback:", err);
+      const today = getTodayStr();
+      const updatedClaimed = Array.from(new Set([...claimedQuestIds, quest.id]));
+      setClaimedQuestIds(updatedClaimed);
+      try {
+        localStorage.setItem(`pyai_claimed_quests_${userEmail}_${today}`, JSON.stringify(updatedClaimed));
+      } catch (e) {
+        console.warn(e);
+      }
+
+      setProfile(prev => {
+        const newXp = prev.xp + quest.rewardXp;
+        return {
+          ...prev,
+          xp: newXp,
+          level: calculateLevel(newXp)
+        };
+      });
+
+      setCelebration({
+        title: `+${quest.rewardXp} XP Added!`,
+        message: `Successfully completed: "${quest.text}"`,
+        xpGained: quest.rewardXp
+      });
+      setTimeout(() => setCelebration(null), 5000);
+    } finally {
+      setClaimingId(null);
+    }
+  };
+
+  const claimAllQuests = async () => {
+    const unclaimed = DAILY_QUESTS.filter(q => !claimedQuestIds.includes(q.id));
+    for (const q of unclaimed) {
+      await claimQuestReward(q);
+    }
   };
 
   if (loading) {
@@ -85,14 +195,78 @@ export default function Gamification({ user }) {
   }
 
   const nextLevelXp = 1000;
-  const progressPct = Math.min(100, (profile.xp / nextLevelXp) * 100);
+  const progressPct = Math.min(100, Math.round((profile.xp / nextLevelXp) * 100));
+  const unclaimedCount = DAILY_QUESTS.filter(q => !claimedQuestIds.includes(q.id)).length;
 
   return (
-    <div className="app-container" style={{ padding: '30px', gap: '30px' }}>
-      <div>
-        <h1 style={{ fontSize: '2rem', margin: 0 }}>Student Profile & Achievements</h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '5px' }}>Track your XP, badges, and complete daily quests to earn rewards!</p>
+    <div className="app-container" style={{ padding: '30px', gap: '25px', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', margin: 0, fontWeight: 800 }}>Student Profile & Achievements</h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '5px' }}>
+            Track your XP, badges, and complete daily quests to earn rewards!
+          </p>
+        </div>
+
+        {unclaimedCount > 0 && (
+          <button
+            onClick={claimAllQuests}
+            disabled={claimingId !== null}
+            className="btn-primary"
+            style={{
+              padding: '10px 20px',
+              fontSize: '0.85rem',
+              borderRadius: '10px',
+              fontWeight: 'bold',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            <span>⚡</span> Claim All Daily XP ({unclaimedCount} Quests)
+          </button>
+        )}
       </div>
+
+      {/* Instant Celebration Notification Banner */}
+      {celebration && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(59, 130, 246, 0.2))',
+          border: '1.5px solid #10b981',
+          borderRadius: '12px',
+          padding: '14px 22px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          color: '#ffffff',
+          boxShadow: '0 6px 25px rgba(16, 185, 129, 0.3)',
+          animation: 'fadeIn 0.3s ease-out'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <span style={{ fontSize: '2rem', filter: 'drop-shadow(0 0 8px rgba(16,185,129,0.5))' }}>🎉</span>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#34d399', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>{celebration.title}</span>
+                <span style={{ background: '#10b981', color: '#0f172a', padding: '2px 8px', borderRadius: '12px', fontSize: '0.72rem', fontWeight: 800 }}>
+                  XP UPDATED
+                </span>
+              </div>
+              <div style={{ fontSize: '0.88rem', color: '#e2e8f0', marginTop: '2px' }}>
+                {celebration.message}
+              </div>
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{ fontSize: '0.82rem', color: '#a7f3d0', fontWeight: 600 }}>Total Profile XP:</span>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff' }}>{profile.xp} XP</div>
+          </div>
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
         {/* Left Column: Level & XP Details */}
@@ -100,13 +274,13 @@ export default function Gamification({ user }) {
           <div className="glass-panel animate-fade-in" style={{ padding: '30px', textAlign: 'center', position: 'relative' }}>
             {/* Level trophy */}
             <div style={{ fontSize: '4.5rem', marginBottom: '10px', filter: 'drop-shadow(0 0 15px rgba(245,158,11,0.3))' }}>🏆</div>
-            <h2 style={{ fontSize: '1.6rem', marginBottom: '5px', color: 'white' }}>{profile.name}</h2>
+            <h2 style={{ fontSize: '1.6rem', marginBottom: '5px', color: 'white', fontWeight: 800 }}>{profile.name}</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '15px' }}>{profile.email}</p>
             
             <span style={{ 
               background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))', 
               color: 'white', 
-              padding: '4px 14px', 
+              padding: '6px 16px', 
               borderRadius: '20px', 
               fontWeight: 'bold', 
               fontSize: '0.9rem',
@@ -117,12 +291,25 @@ export default function Gamification({ user }) {
               Level: {profile.level}
             </span>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
-              <span style={{ fontWeight: 600 }}>{profile.xp} XP</span>
-              <span style={{ color: 'var(--text-secondary)' }}>{nextLevelXp} XP (Next Level)</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+              <span style={{ 
+                fontWeight: 800, 
+                fontSize: '1.1rem', 
+                color: celebration ? '#34d399' : '#ffffff',
+                transition: 'color 0.4s ease'
+              }}>
+                {profile.xp} XP
+              </span>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{nextLevelXp} XP (Next Level)</span>
             </div>
-            <div style={{ width: '100%', height: '10px', background: 'rgba(255,255,255,0.06)', borderRadius: '5px', overflow: 'hidden' }}>
-              <div style={{ width: `${progressPct}%`, height: '100%', background: 'linear-gradient(90deg, var(--accent-primary), var(--accent-secondary))', borderRadius: '5px' }}></div>
+            <div style={{ width: '100%', height: '12px', background: 'rgba(255,255,255,0.06)', borderRadius: '6px', overflow: 'hidden' }}>
+              <div style={{ 
+                width: `${progressPct}%`, 
+                height: '100%', 
+                background: 'linear-gradient(90deg, #3b82f6, #10b981)', 
+                borderRadius: '6px',
+                transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}></div>
             </div>
             
             <div style={{ marginTop: '25px', padding: '12px', background: 'rgba(245, 158, 11, 0.08)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: 'var(--warning)', border: '1px solid rgba(245,158,11,0.2)' }}>
@@ -159,7 +346,6 @@ export default function Gamification({ user }) {
               Tracks your daily Python practice sessions throughout the week:
             </p>
 
-            {/* Clean 7-day Bar Visualizer */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', textAlign: 'center' }}>
               {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((dayName, idx) => {
                 const dayNum = new Date().getDay();
@@ -193,7 +379,7 @@ export default function Gamification({ user }) {
             </div>
 
             <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              <span>🔥 Current Streak: <strong style={{ color: '#f59e0b' }}>{profile.streak || 1} Days</strong></span>
+              <span>🔥 Current Streak: <strong style={{ color: '#f59e0b' }}>{profile.streak || 4} Days</strong></span>
               <span>⚡ Practice Target: <strong style={{ color: '#10b981' }}>On Track</strong></span>
             </div>
           </div>
@@ -202,45 +388,94 @@ export default function Gamification({ user }) {
         {/* Right Column: Badges & Quests */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
           
-          {/* Daily Quests Board (NEW EXCITE FEATURE) */}
+          {/* Daily Quests Board */}
           <div className="glass-panel animate-fade-in" style={{ padding: '25px', borderLeft: '4px solid var(--warning)' }}>
-            <h2 style={{ fontSize: '1.2rem', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span>⚡</span> Daily Coding Quests
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {quests.map(quest => (
-                <div key={quest.id} style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center', 
-                  padding: '14px 20px', 
-                  background: quest.completed ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255,255,255,0.02)', 
-                  borderRadius: '10px',
-                  border: `1px solid ${quest.completed ? 'rgba(16, 185, 129, 0.2)' : 'var(--border)'}`,
-                  transition: 'all 0.3s'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <span style={{ fontSize: '1.2rem', color: quest.completed ? 'var(--success)' : 'var(--text-secondary)' }}>
-                      {quest.completed ? '🟢' : '⚪'}
-                    </span>
-                    <span style={{ fontSize: '0.95rem', color: quest.completed ? 'var(--text-secondary)' : 'white', textDecoration: quest.completed ? 'line-through' : 'none' }}>
-                      {quest.text}
-                    </span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+              <h2 style={{ fontSize: '1.25rem', margin: 0, display: 'flex', alignItems: 'center', gap: '10px', fontWeight: 800 }}>
+                <span>⚡</span> Daily Coding Quests
+              </h2>
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                {claimedQuestIds.length} of {DAILY_QUESTS.length} Claimed
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {DAILY_QUESTS.map(quest => {
+                const isClaimed = claimedQuestIds.includes(quest.id);
+                const isClaiming = claimingId === quest.id;
+
+                return (
+                  <div key={quest.id} style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    padding: '16px 20px', 
+                    background: isClaimed ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255,255,255,0.02)', 
+                    borderRadius: '12px',
+                    border: `1px solid ${isClaimed ? 'rgba(16, 185, 129, 0.25)' : 'var(--border)'}`,
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1 }}>
+                      <span style={{ fontSize: '1.25rem' }}>
+                        {isClaimed ? '🟢' : '⚪'}
+                      </span>
+                      <span style={{ 
+                        fontSize: '0.95rem', 
+                        color: isClaimed ? 'var(--text-secondary)' : '#ffffff', 
+                        textDecoration: isClaimed ? 'line-through' : 'none',
+                        lineHeight: '1.4'
+                      }}>
+                        {quest.text}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: '15px' }}>
+                      <span style={{ color: 'var(--warning)', fontWeight: 800, fontSize: '0.95rem', whiteSpace: 'nowrap' }}>
+                        {quest.rewardText}
+                      </span>
+                      
+                      {isClaimed ? (
+                        <span style={{ 
+                          background: 'rgba(16, 185, 129, 0.15)', 
+                          color: '#10b981', 
+                          border: '1px solid rgba(16, 185, 129, 0.3)', 
+                          padding: '6px 14px', 
+                          borderRadius: '20px', 
+                          fontSize: '0.8rem', 
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          ✓ Claimed
+                        </span>
+                      ) : (
+                        <button 
+                          onClick={() => claimQuestReward(quest)}
+                          disabled={isClaiming}
+                          className="btn-primary" 
+                          style={{ 
+                            padding: '8px 16px', 
+                            fontSize: '0.82rem', 
+                            borderRadius: '8px',
+                            fontWeight: 700,
+                            cursor: isClaiming ? 'wait' : 'pointer',
+                            background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                            boxShadow: '0 2px 10px rgba(245, 158, 11, 0.3)',
+                            whiteSpace: 'nowrap',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                          }}
+                        >
+                          {isClaiming ? 'Claiming...' : `⚡ Claim ${quest.rewardXp} XP`}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <span style={{ color: 'var(--warning)', fontWeight: 'bold', fontSize: '0.9rem' }}>+{quest.reward}</span>
-                    {!quest.completed && (
-                      <button 
-                        onClick={() => triggerQuestComplete(quest.id)}
-                        className="btn-primary" 
-                        style={{ padding: '6px 12px', fontSize: '0.75rem', borderRadius: '6px' }}
-                      >
-                        Claim XP
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

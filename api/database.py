@@ -71,6 +71,16 @@ class CompletedChallenge(Base):
     challenge_id = Column(Integer)
     completed_at = Column(DateTime, default=datetime.datetime.utcnow)
 
+class CompletedQuest(Base):
+    __tablename__ = "completed_quests"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("students.id"))
+    quest_id = Column(Integer)
+    completed_date = Column(String)  # YYYY-MM-DD
+    xp_reward = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
 # Create tables
 Base.metadata.create_all(bind=engine)
 
