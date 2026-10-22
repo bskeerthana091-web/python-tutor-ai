@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+api/__pycache__/
+
+# Database
+api/python_tutor.db
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.venv
+env/
+venv/
+
+# Build artifacts
+frontend/dist/
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

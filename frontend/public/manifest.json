@@ -1,0 +1,21 @@
+{
+  "name": "PyAI Tutor - AI Powered Interactive Python Learning Platform",
+  "short_name": "PyAI Tutor",
+  "description": "Learn Python with AI-powered tutoring, emotion detection, coding duels, and adaptive quizzes",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1c",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}
