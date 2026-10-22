@@ -102,14 +102,17 @@ export default function CodeEditor({
   };
 
   return (
-    <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      <div style={{ padding: '10px 20px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-secondary)' }}>main.py</h3>
+    <div className="glass-panel code-editor-container" style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: '460px', overflow: 'hidden' }}>
+      <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '0.9rem' }}>📄</span>
+          <h3 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>main.py</h3>
+        </div>
         <button 
           onClick={handleRun}
           disabled={isRunning}
           className="btn-primary" 
-          style={{ padding: '6px 15px', display: 'flex', alignItems: 'center', gap: '5px' }}
+          style={{ padding: '7px 16px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '0.85rem' }}
         >
           {isRunning ? 'Running...' : '▶ Run Code'}
         </button>

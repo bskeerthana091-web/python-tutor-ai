@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import Login from './components/Login.jsx';
 import LevelSelection from './components/LevelSelection.jsx';
 import MainLearning from './components/MainLearning.jsx';
@@ -12,101 +12,196 @@ import MockInterview from './components/MockInterview.jsx';
 import ResumeBuilder from './components/ResumeBuilder.jsx';
 import { LanguageProvider } from './components/LanguageContext.jsx';
 
-function NavLink({ to, children }) {
-  return (
-    <Link to={to} style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.3s', fontWeight: 500, fontSize: '0.9rem', whiteSpace: 'nowrap' }}
-      onMouseOver={(e) => e.target.style.color = 'var(--text-primary)'}
-      onMouseOut={(e) => e.target.style.color = 'var(--text-secondary)'}>
-      {children}
-    </Link>
-  );
-}
-
 function NavBar({ user, onLogout }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
   const displayName = user?.name || localStorage.getItem('userName') || 'Student';
   const initials = displayName.charAt(0).toUpperCase();
 
+  // Close mobile drawer whenever location changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  const navItems = [
+    { to: '/learn', label: '📖 Lessons' },
+    { to: '/daily', label: '🎯 Daily Challenge' },
+    { to: '/interview', label: '🎤 Interview' },
+    { to: '/leaderboard', label: '🏆 Leaderboard' },
+    { to: '/analytics', label: '📊 Analytics' },
+    { to: '/resume', label: '📄 Resume' },
+    { to: '/gamification', label: '⭐ Profile & XP' }
+  ];
+
   return (
-    <nav className="nav-bar" style={{ padding: '10px 20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <img src="/logo.png" alt="PyAI Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-        <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, background: 'linear-gradient(135deg, #e2e8f0, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>PyAI Tutor</h2>
-      </div>
-      
-      <div style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
-        <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-          <NavLink to="/learn">📖 Lessons</NavLink>
-          <NavLink to="/daily">🎯 Daily Challenge</NavLink>
-          <NavLink to="/interview">🎤 Interview</NavLink>
-          <NavLink to="/leaderboard">🏆 Leaderboard</NavLink>
-          <NavLink to="/analytics">📊 Analytics</NavLink>
-          <NavLink to="/resume">📄 Resume</NavLink>
+    <>
+      <nav className="nav-bar" style={{ padding: '10px 16px', position: 'sticky', top: 0, zIndex: 1000, background: '#111827', borderBottom: '1px solid var(--border)' }}>
+        {/* Brand */}
+        <Link to="/learn" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+          <img src="/logo.png" alt="PyAI Logo" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
+          <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, background: 'linear-gradient(135deg, #e2e8f0, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', whiteSpace: 'nowrap' }}>
+            PyAI Tutor
+          </h2>
+        </Link>
+
+        {/* Desktop Nav Links (Hidden on mobile via CSS) */}
+        <div className="nav-links-desktop" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          {navItems.slice(0, 6).map(item => {
+            const isActive = location.pathname === item.to;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                style={{
+                  color: isActive ? '#38bdf8' : 'var(--text-secondary)',
+                  textDecoration: 'none',
+                  fontWeight: isActive ? 700 : 500,
+                  fontSize: '0.88rem',
+                  whiteSpace: 'nowrap',
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  background: isActive ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+                  border: isActive ? '1px solid rgba(56, 189, 248, 0.25)' : '1px solid transparent',
+                  transition: 'all 0.2s'
+                }}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderLeft: '1px solid var(--border)', paddingLeft: '15px' }}>
+        {/* Right User Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Avatar Profile Link */}
           <Link 
             to="/gamification" 
-            title="Click your avatar to view your Profile & Achievements"
+            title="Profile & Achievements"
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
               gap: '8px', 
               textDecoration: 'none',
-              padding: '4px 10px',
+              padding: '3px 8px',
               borderRadius: '20px',
-              background: 'rgba(59, 130, 246, 0.1)',
-              border: '1.5px solid rgba(59, 130, 246, 0.3)',
-              cursor: 'pointer',
+              background: 'rgba(59, 130, 246, 0.12)',
+              border: '1px solid rgba(59, 130, 246, 0.35)',
               transition: 'all 0.2s ease'
             }}
-            onMouseOver={(e) => { e.currentTarget.style.background = 'rgba(59, 130, 246, 0.25)'; e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.6)'; }}
-            onMouseOut={(e) => { e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)'; e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)'; }}
           >
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{displayName}</span>
+            <span className="user-name-desktop" style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {displayName}
+            </span>
             <div style={{ 
-              width: '32px', 
-              height: '32px', 
+              width: '28px', 
+              height: '28px', 
               borderRadius: '50%', 
               background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))', 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
               color: 'white', 
-              fontWeight: 'bold', 
-              fontSize: '0.9rem', 
-              border: '2px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 0 10px rgba(59, 130, 246, 0.4)'
+              fontWeight: 800, 
+              fontSize: '0.85rem', 
+              border: '1.5px solid rgba(255,255,255,0.25)',
+              boxShadow: '0 0 8px rgba(59, 130, 246, 0.4)'
             }}>
               {initials}
             </div>
           </Link>
+
+          {/* Logout Button */}
           <button 
             onClick={onLogout} 
-            title="Click wrong mark (❌) to logout"
+            title="Click to logout"
             style={{ 
               display: 'flex', 
               alignItems: 'center', 
-              gap: '6px', 
+              gap: '4px', 
               background: '#dc2626', 
-              border: '1.5px solid #ef4444', 
+              border: '1px solid #ef4444', 
               color: '#ffffff', 
-              padding: '6px 14px', 
-              borderRadius: '8px', 
+              padding: '5px 10px', 
+              borderRadius: '6px', 
               cursor: 'pointer', 
-              fontSize: '0.85rem', 
+              fontSize: '0.8rem', 
               fontWeight: 700, 
-              boxShadow: '0 2px 10px rgba(220, 38, 38, 0.35)',
-              transition: 'all 0.2s transform' 
+              boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)'
             }}
-            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.background = '#b91c1c'; }}
-            onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = '#dc2626'; }}
           >
-            <span style={{ fontSize: '1rem', fontWeight: 900 }}>❌</span>
-            <span>Logout</span>
+            <span>❌</span>
+            <span className="logout-text-desktop">Logout</span>
+          </button>
+
+          {/* Mobile Hamburger Toggle Button */}
+          <button
+            className="nav-mobile-toggle"
+            onClick={() => setMobileMenuOpen(prev => !prev)}
+            aria-label="Toggle Navigation Menu"
+            style={{
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              color: '#ffffff',
+              padding: '6px 10px',
+              borderRadius: '6px',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              lineHeight: 1
+            }}
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
           </button>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile Menu Dropdown Drawer */}
+      {mobileMenuOpen && (
+        <div style={{
+          position: 'fixed',
+          top: '52px',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(10, 15, 28, 0.96)',
+          backdropFilter: 'blur(16px)',
+          zIndex: 999,
+          padding: '20px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          animation: 'fadeIn 0.2s ease-out',
+          overflowY: 'auto'
+        }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>
+            Navigation Menu
+          </div>
+          {navItems.map(item => {
+            const isActive = location.pathname === item.to;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '12px 16px',
+                  borderRadius: '10px',
+                  textDecoration: 'none',
+                  fontSize: '0.98rem',
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#38bdf8' : '#e2e8f0',
+                  background: isActive ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255,255,255,0.03)',
+                  border: isActive ? '1px solid rgba(56, 189, 248, 0.35)' : '1px solid rgba(255,255,255,0.05)'
+                }}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </>
   );
 }
 

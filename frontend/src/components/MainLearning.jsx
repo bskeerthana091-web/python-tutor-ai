@@ -116,7 +116,16 @@ export default function MainLearning() {
     <div className="dual-panel">
       {/* Left Panel */}
       <div className="panel animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' }}>
+        <div style={{ 
+          display: 'flex', 
+          gap: '8px', 
+          marginBottom: '14px', 
+          overflowX: 'auto', 
+          flexWrap: 'nowrap', 
+          paddingBottom: '6px',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none'
+        }}>
           <TabButton active={activeTab === 'lessons'} onClick={() => setActiveTab('lessons')}>📖 Lessons</TabButton>
           <TabButton active={activeTab === 'ai'} onClick={() => setActiveTab('ai')}>🤖 AI Tutor</TabButton>
           <TabButton active={activeTab === 'visualizer'} onClick={() => setActiveTab('visualizer')}>📊 Visualizer</TabButton>
@@ -362,6 +371,37 @@ export default function MainLearning() {
                     </div>
                   </div>
                 )}
+
+                {/* Mobile Quick Jump to Editor Button */}
+                <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'center' }}>
+                  <button
+                    onClick={() => {
+                      const editorElem = document.getElementById('code-editor-panel');
+                      if (editorElem) {
+                        editorElem.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '12px 18px',
+                      borderRadius: '10px',
+                      fontWeight: 800,
+                      fontSize: '0.92rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+                      color: '#ffffff',
+                      border: 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.35)'
+                    }}
+                  >
+                    <span>💻</span>
+                    <span>Start Coding in Editor Below ↓</span>
+                  </button>
+                </div>
               </div>
             ) : (
               <p style={{ color: 'var(--text-secondary)' }}>Select a chapter above to view the lesson content.</p>
@@ -389,7 +429,7 @@ export default function MainLearning() {
       </div>
 
       {/* Right Panel */}
-      <div className="panel animate-fade-in" style={{ animationDelay: '0.2s' }}>
+      <div id="code-editor-panel" className="panel animate-fade-in" style={{ animationDelay: '0.2s' }}>
         <CodeEditor 
           code={code} 
           setCode={setCode} 
@@ -413,10 +453,13 @@ function TabButton({ children, active, onClick }) {
         background: active ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
         color: active ? 'var(--accent-secondary)' : 'var(--text-secondary)',
         border: `1px solid ${active ? 'var(--accent-primary)' : 'var(--border)'}`,
-        padding: '8px 16px',
+        padding: '7px 14px',
         borderRadius: '8px',
         cursor: 'pointer',
         fontWeight: 600,
+        fontSize: '0.85rem',
+        whiteSpace: 'nowrap',
+        flexShrink: 0,
         transition: 'all 0.2s'
       }}
     >

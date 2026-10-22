@@ -268,7 +268,7 @@ export default function Gamification({ user }) {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
+      <div className="gamification-grid" style={{ gap: '30px' }}>
         {/* Left Column: Level & XP Details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="glass-panel animate-fade-in" style={{ padding: '30px', textAlign: 'center', position: 'relative' }}>

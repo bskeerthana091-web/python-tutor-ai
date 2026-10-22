@@ -322,7 +322,7 @@ export default function DailyChallenge({ user }) {
   const dc = challenge; // shorthand
 
   return (
-    <div style={{ display: 'flex', gap: '20px', padding: '25px', height: 'calc(100vh - 70px)', position: 'relative' }}>
+    <div className="daily-challenge-layout" style={{ position: 'relative' }}>
       {/* One-Time Color Star Splash */}
       {renderStarSplash()}
 
@@ -443,7 +443,7 @@ export default function DailyChallenge({ user }) {
       </div>
 
       {/* Right: Code Editor (Paste Protected) */}
-      <div className="glass-panel animate-fade-in" style={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column', overflow: 'hidden', animationDelay: '0.1s' }}>
+      <div className="glass-panel animate-fade-in daily-editor-panel" style={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column', overflow: 'hidden', animationDelay: '0.1s' }}>
         <div style={{ padding: '12px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h3 style={{ margin: 0, fontSize: '1rem', color: '#cbd5e1' }}>daily_challenge.py</h3>

@@ -160,7 +160,7 @@ export default function Analytics({ user }) {
       <h1 style={{ marginBottom: '30px', fontSize: '2rem' }}>📊 Learning Analytics</h1>
       
       {/* Existing Charts */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px', marginBottom: '25px' }}>
+      <div className="responsive-two-col-grid" style={{ gap: '25px', marginBottom: '25px' }}>
         <div className="glass-panel animate-fade-in" style={{ padding: '20px' }}>
           <h3>Progress Over Time</h3>
           <div style={{ marginTop: '20px', height: '300px' }}>
@@ -177,7 +177,7 @@ export default function Analytics({ user }) {
       </div>
 
       {/* NEW: Learning Journey + Time-to-Solve */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '25px', marginBottom: '25px' }}>
+      <div className="responsive-two-col-grid" style={{ gap: '25px', marginBottom: '25px' }}>
         <div className="glass-panel animate-fade-in" style={{ padding: '20px', animationDelay: '0.2s' }}>
           <h3 style={{ marginBottom: '5px' }}>📈 Learning Journey</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '0 0 15px' }}>Average quiz scores over time — proof the AI is helping!</p>

@@ -150,3 +150,104 @@ body {
   background: var(--bg-card);
   border-bottom: 1px solid var(--border);
 }
+
+/* Multi-column grid defaults */
+.responsive-two-col-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.gamification-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+.daily-challenge-layout {
+  display: flex;
+  gap: 20px;
+  padding: 25px;
+  height: calc(100vh - 70px);
+}
+
+/* Responsive Mobile Rules */
+@media (max-width: 768px) {
+  .nav-bar {
+    padding: 10px 14px !important;
+  }
+
+  .nav-links-desktop,
+  .user-name-desktop,
+  .logout-text-desktop {
+    display: none !important;
+  }
+
+  .nav-mobile-toggle {
+    display: flex !important;
+  }
+
+  .dual-panel {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: auto !important;
+    padding: 12px 10px !important;
+    gap: 16px !important;
+  }
+
+  .dual-panel .panel {
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .code-editor-container {
+    height: 520px !important;
+    min-height: 520px !important;
+  }
+
+  .daily-challenge-layout {
+    flex-direction: column !important;
+    height: auto !important;
+    padding: 12px 10px !important;
+    gap: 16px !important;
+  }
+
+  .daily-challenge-layout > div {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+  }
+
+  .daily-editor-panel {
+    min-height: 480px !important;
+    height: 520px !important;
+  }
+
+  .responsive-two-col-grid,
+  .gamification-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .app-container {
+    padding: 12px 10px !important;
+    gap: 16px !important;
+  }
+
+  .glass-panel {
+    padding: 16px !important;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .nav-mobile-toggle {
+    display: none !important;
+  }
+}
+
