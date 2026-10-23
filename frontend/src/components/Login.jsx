@@ -42,18 +42,23 @@ export default function Login({ onLogin }) {
     cover: 375  // moment the blade blankets the card to swap states
   };
 
-  // Seed default accounts if none exist
+  // Ensure all credentials fields start 100% clean and empty upon logout/mount
   useEffect(() => {
+    setSignInEmail('');
+    setSignInPassword('');
+    setSignUpName('');
+    setSignUpEmail('');
+    setSignUpPassword('');
+    setSignUpConfirmPassword('');
+    setShowPassword(false);
+    setErrorMessage('');
     try {
       const existing = localStorage.getItem('pyai_accounts');
-      if (!existing || JSON.parse(existing).length === 0) {
-        const seedAccounts = [
-          { name: 'Python Explorer', email: 'student@python.ai', password: 'Password123!', role: 'student' }
-        ];
-        localStorage.setItem('pyai_accounts', JSON.stringify(seedAccounts));
+      if (!existing) {
+        localStorage.setItem('pyai_accounts', JSON.stringify([]));
       }
     } catch {
-      localStorage.setItem('pyai_accounts', JSON.stringify([]));
+      // ignore
     }
   }, []);
 
@@ -725,16 +730,25 @@ export default function Login({ onLogin }) {
             </div>
 
             <form onSubmit={handleAuth} autoComplete="off">
+              {/* Invisible decoy inputs to absorb browser password-manager autofill */}
+              <input type="text" name="fake_username_remembered" style={{ position: 'absolute', opacity: 0, height: 0, width: 0, pointerEvents: 'none' }} tabIndex={-1} aria-hidden="true" autoComplete="off" />
+              <input type="password" name="fake_password_remembered" style={{ position: 'absolute', opacity: 0, height: 0, width: 0, pointerEvents: 'none' }} tabIndex={-1} aria-hidden="true" autoComplete="off" />
+
               <div className="auth_input_group">
                 <label className="auth_label">Email Address</label>
                 <input 
                   type="email" 
+                  name="pyai_user_email_clean"
                   value={signInEmail}
                   onChange={(e) => setSignInEmail(e.target.value)}
                   className="auth_input" 
                   placeholder="Enter your email address" 
                   required 
-                  autoComplete="off"
+                  autoComplete="new-password"
+                  readOnly
+                  onFocus={(e) => e.target.removeAttribute('readonly')}
+                  onPointerDown={(e) => e.target.removeAttribute('readonly')}
+                  onTouchStart={(e) => e.target.removeAttribute('readonly')}
                 />
               </div>
 
@@ -751,12 +765,17 @@ export default function Login({ onLogin }) {
                 </div>
                 <input 
                   type={showPassword ? 'text' : 'password'}
+                  name="pyai_user_password_clean"
                   value={signInPassword}
                   onChange={(e) => setSignInPassword(e.target.value)}
                   className="auth_input" 
                   placeholder="Enter your password" 
                   required 
-                  autoComplete="off"
+                  autoComplete="new-password"
+                  readOnly
+                  onFocus={(e) => e.target.removeAttribute('readonly')}
+                  onPointerDown={(e) => e.target.removeAttribute('readonly')}
+                  onTouchStart={(e) => e.target.removeAttribute('readonly')}
                 />
               </div>
 

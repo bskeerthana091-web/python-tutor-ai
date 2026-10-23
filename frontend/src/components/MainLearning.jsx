@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CodeEditor from './CodeEditor.jsx';
 import AITutor from './AITutor.jsx';
@@ -10,6 +10,7 @@ import { API_BASE_URL } from '../config/api.js';
 
 export default function MainLearning() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const getInitialTab = () => {
     try {
@@ -152,6 +153,54 @@ export default function MainLearning() {
         {activeTab === 'lessons' && (
           <div className="glass-panel" style={{ padding: '20px', height: '100%', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
             
+            {/* Daily Challenge Quick-Access Banner (Always Visible on Full, Half-Screen, & Mobile) */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.16), rgba(245, 158, 11, 0.08))',
+              border: '1.5px solid rgba(245, 158, 11, 0.55)',
+              borderRadius: '14px',
+              padding: '14px 18px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+              flexWrap: 'wrap',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.25)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '1.8rem', lineHeight: 1 }}>🎯</span>
+                <div>
+                  <div style={{ fontSize: '0.96rem', fontWeight: 800, color: '#fef08a', letterSpacing: '-0.01em' }}>
+                    Today's Python Daily Challenge
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#cbd5e1' }}>
+                    Solve today's unique challenge question to earn +100 XP & maintain your daily streak!
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => navigate('/daily')}
+                style={{
+                  background: 'linear-gradient(135deg, #eab308, #f59e0b)',
+                  color: '#090d16',
+                  border: 'none',
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  fontWeight: 800,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 10px rgba(234, 179, 8, 0.35)',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <span>Solve Daily Challenge</span>
+                <span>→</span>
+              </button>
+            </div>
+
             {/* Simple, Intuitive Level & Chapter Selector */}
             <div style={{
               background: 'linear-gradient(145deg, rgba(30,41,59,0.7), rgba(15,23,42,0.85))',

@@ -112,6 +112,31 @@ function NavBar({ user, onLogout }) {
 
         {/* Right User Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Always Visible Daily Challenge Button (Desktop, Half-Screen, Mobile) */}
+          <Link
+            to="/daily"
+            title="Today's Python Daily Challenge (+100 XP)"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.22), rgba(245, 158, 11, 0.28))',
+              border: '1.5px solid rgba(245, 158, 11, 0.65)',
+              color: '#fef08a',
+              padding: '4px 10px',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              boxShadow: '0 0 10px rgba(234, 179, 8, 0.25)',
+              transition: 'all 0.2s'
+            }}
+          >
+            <span>🎯</span>
+            <span style={{ fontWeight: 800 }}>Daily</span>
+          </Link>
+
           {/* Avatar Profile Link */}
           <Link 
             to="/gamification" 
@@ -269,6 +294,7 @@ function PageWithNav({ user, onLogout, children }) {
 }
 
 function AppRoutes() {
+  const [logoutKey, setLogoutKey] = useState(0);
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('userName');
     const role = localStorage.getItem('userRole');
@@ -284,6 +310,10 @@ function AppRoutes() {
     localStorage.removeItem('userName');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userEmail');
+    try {
+      sessionStorage.clear();
+    } catch {}
+    setLogoutKey(prev => prev + 1);
     setUser(null);
   };
 
@@ -293,7 +323,7 @@ function AppRoutes() {
   return (
     <div className="app-container">
       <Routes>
-        <Route path="/" element={user ? <Navigate to="/learn" replace /> : <Login onLogin={handleLogin} />} />
+        <Route path="/" element={user ? <Navigate to="/learn" replace /> : <Login key={logoutKey} onLogin={handleLogin} />} />
         <Route path="/level" element={user ? <LevelSelection /> : <Navigate to="/" replace />} />
         <Route path="/learn" element={user ? <PageWithNav user={user} onLogout={handleLogout}><MainLearning user={user} /></PageWithNav> : <Navigate to="/" replace />} />
         <Route path="/analytics" element={user ? <PageWithNav user={user} onLogout={handleLogout}><Analytics user={user} /></PageWithNav> : <Navigate to="/" replace />} />
