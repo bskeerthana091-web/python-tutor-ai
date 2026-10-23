@@ -1,18 +1,9 @@
 import json
 import numpy as np
-from sentence_transformers import SentenceTransformer
+import hashlib
 from sqlalchemy.orm import Session
 from database import Submission, PlagiarismAlert, Student
 import datetime
-
-embedder = None
-try:
-    embedder = SentenceTransformer('all-MiniLM-L6-v2', local_files_only=True)
-except Exception:
-    try:
-        embedder = SentenceTransformer('all-MiniLM-L6-v2')
-    except Exception as e:
-        print("Warning: Could not connect to HuggingFace Hub for SentenceTransformer. Using local hash embedding fallback.", e)
 
 def cosine_similarity(v1, v2):
     norm1 = np.linalg.norm(v1)
@@ -22,15 +13,26 @@ def cosine_similarity(v1, v2):
     return float(np.dot(v1, v2) / (norm1 * norm2))
 
 def get_embedding(code: str):
-    if embedder is not None:
-        try:
-            return embedder.encode([code])[0]
-        except Exception:
-            pass
-    # Fallback deterministic pseudo-embedding vector (length 384)
-    vector = np.zeros(384)
-    for idx, char in enumerate(code[:384]):
-        vector[idx % 384] += ord(char)
+    """
+    Lightweight, deterministic feature-hashing embedding vector (length 384).
+    Uses token hashing and character 3-grams for semantic similarity without loading heavy neural networks into RAM.
+    """
+    vector = np.zeros(384, dtype=np.float32)
+    if not code:
+        return vector
+    
+    # Token-level hash frequencies
+    words = code.split()
+    for w in words:
+        h = int(hashlib.md5(w.encode('utf-8', errors='ignore')).hexdigest()[:8], 16)
+        vector[h % 384] += 1.0
+        
+    # Substring 3-gram frequencies for code structure
+    for i in range(len(code) - 2):
+        tri = code[i:i+3]
+        h = int(hashlib.md5(tri.encode('utf-8', errors='ignore')).hexdigest()[:8], 16)
+        vector[h % 384] += 0.5
+        
     norm = np.linalg.norm(vector)
     return vector / norm if norm > 0 else vector
 
