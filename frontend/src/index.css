@@ -259,16 +259,30 @@ body {
     gap: 16px !important;
   }
 
+  .profile-header-wrap {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .profile-header-wrap > button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .profile-quest-card {
+    padding: 12px 14px !important;
+  }
+
   .glass-panel {
     padding: 16px !important;
   }
 
   h1 {
-    font-size: 1.5rem !important;
+    font-size: 1.45rem !important;
   }
 
   h2 {
-    font-size: 1.25rem !important;
+    font-size: 1.2rem !important;
   }
 }
 

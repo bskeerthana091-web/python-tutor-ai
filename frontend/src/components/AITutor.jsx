@@ -223,13 +223,21 @@ export default function AITutor({ activeTab, currentError }) {
         <div ref={chatEndRef} />
       </div>
 
-      <form onSubmit={handleAsk} style={{ padding: '15px', borderTop: '1px solid var(--border)', display: 'flex', gap: '8px', alignItems: 'center' }}>
+      <form onSubmit={handleAsk} style={{ 
+        padding: '10px 12px', 
+        borderTop: '1px solid var(--border)', 
+        display: 'flex', 
+        gap: '8px', 
+        alignItems: 'center',
+        width: '100%',
+        boxSizing: 'border-box'
+      }}>
         {/* Voice Input Button */}
         <button type="button" onClick={isListening ? stopListening : startListening} title={isListening ? 'Stop Listening' : 'Voice Input'}
           style={{
-            width: '42px', height: '42px', borderRadius: '50%', border: 'none', cursor: 'pointer',
+            width: '40px', height: '40px', borderRadius: '50%', border: 'none', cursor: 'pointer',
             background: isListening ? 'var(--error)' : 'rgba(59,130,246,0.15)', color: 'white',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.05rem',
             flexShrink: 0, transition: 'all 0.2s',
             animation: isListening ? 'pulse 1s infinite' : 'none',
             boxShadow: isListening ? '0 0 15px rgba(239,68,68,0.5)' : 'none'
@@ -242,9 +250,42 @@ export default function AITutor({ activeTab, currentError }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={isListening ? 'Listening...' : t('askPlaceholder')}
-          style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid var(--border)', background: 'rgba(0,0,0,0.2)', color: 'white', outline: 'none' }}
+          style={{ 
+            flex: 1, 
+            minWidth: 0, 
+            height: '40px',
+            padding: '8px 12px', 
+            borderRadius: '8px', 
+            border: '1px solid var(--border)', 
+            background: 'rgba(0,0,0,0.25)', 
+            color: 'white', 
+            outline: 'none',
+            fontSize: '0.9rem',
+            boxSizing: 'border-box'
+          }}
         />
-        <button type="submit" className="btn-primary" disabled={loading}>Send</button>
+        <button 
+          type="submit" 
+          className="btn-primary" 
+          disabled={loading || !input.trim()}
+          style={{
+            flexShrink: 0,
+            height: '40px',
+            padding: '0 16px',
+            borderRadius: '8px',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '5px',
+            whiteSpace: 'nowrap',
+            boxSizing: 'border-box'
+          }}
+        >
+          <span>{loading ? '...' : 'Send'}</span>
+          {!loading && <span style={{ fontSize: '0.85rem' }}>➤</span>}
+        </button>
       </form>
 
       {/* Pulse animation for mic */}

@@ -41,37 +41,76 @@ export default function DailyChallenge({ user }) {
     expected_output: '6', seconds_remaining: 43200, date: today
   };
 
-  useEffect(() => {
-    const fetchChallenge = async () => {
-      // Check local storage completion for today first
-      const doneLocal = localStorage.getItem(`daily_completed_${userEmail}_${today}`);
-      if (doneLocal === 'true') {
-        setCompleted(true);
-      }
+  const getStoredCompletedIds = () => {
+    try {
+      const stored = localStorage.getItem(`pyai_completed_challenge_ids_${userEmail}`);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  };
 
-      try {
-        const res = await axios.get(`${API_BASE_URL}/daily-challenge?email=${encodeURIComponent(userEmail)}`);
-        const data = res.data;
-        if (data && data.title) {
-          setChallenge(data);
-          // Never give away the answer! Default only to print("Hello, World!")
-          setCode(DEFAULT_STARTER);
-          setTimeLeft(data.seconds_remaining || 0);
-          if (data.completed_today || doneLocal === 'true') {
-            setCompleted(true);
-          }
-        } else {
-          throw new Error('Invalid response');
-        }
-      } catch {
-        setChallenge(FALLBACK);
-        setCode(DEFAULT_STARTER);
-        setTimeLeft(FALLBACK.seconds_remaining);
-      } finally { 
-        setLoading(false); 
+  const saveCompletedId = (id) => {
+    try {
+      const current = getStoredCompletedIds();
+      if (!current.includes(id)) {
+        const updated = [...current, id];
+        localStorage.setItem(`pyai_completed_challenge_ids_${userEmail}`, JSON.stringify(updated));
       }
-    };
-    fetchChallenge();
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
+  const fetchChallenge = async (forceAdvance = false, targetId = -1) => {
+    setLoading(true);
+    setResult(null);
+    const storedIds = getStoredCompletedIds();
+    const queryParams = new URLSearchParams({
+      email: userEmail,
+      completed: storedIds.join(','),
+      advance: forceAdvance ? 'true' : 'false'
+    });
+    if (targetId >= 0) {
+      queryParams.set('challenge_id', targetId.toString());
+    }
+
+    try {
+      const res = await axios.get(`${API_BASE_URL}/daily-challenge?${queryParams.toString()}`);
+      const data = res.data;
+      if (data && data.title) {
+        setChallenge(data);
+        setCode(data.starter_code || DEFAULT_STARTER);
+        setTimeLeft(data.seconds_remaining || 0);
+
+        if (data.completed_ids && Array.isArray(data.completed_ids)) {
+          const combined = Array.from(new Set([...storedIds, ...data.completed_ids]));
+          try {
+            localStorage.setItem(`pyai_completed_challenge_ids_${userEmail}`, JSON.stringify(combined));
+          } catch (e) {
+            console.warn(e);
+          }
+        }
+
+        if (data.completed_today && !forceAdvance) {
+          setCompleted(true);
+        } else {
+          setCompleted(false);
+        }
+      } else {
+        throw new Error('Invalid response');
+      }
+    } catch {
+      setChallenge(FALLBACK);
+      setCode(DEFAULT_STARTER);
+      setTimeLeft(FALLBACK.seconds_remaining);
+    } finally { 
+      setLoading(false); 
+    }
+  };
+
+  useEffect(() => {
+    fetchChallenge(false);
   }, [userEmail, today]);
 
   // Countdown timer
@@ -101,7 +140,19 @@ export default function DailyChallenge({ user }) {
       if (res.data.passed) {
         setCompleted(true);
         triggerStarSplash();
-        localStorage.setItem(`daily_completed_${userEmail}_${today}`, 'true');
+        saveCompletedId(challenge.id);
+        if (res.data.completed_ids && Array.isArray(res.data.completed_ids)) {
+          try {
+            localStorage.setItem(`pyai_completed_challenge_ids_${userEmail}`, JSON.stringify(res.data.completed_ids));
+          } catch (e) {
+            console.warn(e);
+          }
+        }
+        try {
+          localStorage.setItem(`daily_completed_${userEmail}_${today}`, 'true');
+        } catch (e) {
+          console.warn(e);
+        }
       }
     } catch {
       setResult({ passed: false, output: 'Server unavailable', expected: challenge.expected_output, xp_awarded: 0 });
@@ -292,26 +343,44 @@ export default function DailyChallenge({ user }) {
             </div>
           </div>
 
-          {/* Navigation Button */}
-          <button
-            onClick={() => navigate('/learn')}
-            className="btn-primary"
-            style={{
-              padding: '14px 32px',
-              fontSize: '1.05rem',
-              fontWeight: 700,
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 6px 25px rgba(59, 130, 246, 0.45)',
-              transition: 'all 0.2s transform'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.04)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          >
-            📖 Continue Learning in Lessons Tab →
-          </button>
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              onClick={() => fetchChallenge(true)}
+              className="btn-primary"
+              style={{
+                padding: '14px 28px',
+                fontSize: '1.02rem',
+                fontWeight: 700,
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+            >
+              🚀 Practice Next Challenge →
+            </button>
+
+            <button
+              onClick={() => navigate('/learn')}
+              style={{
+                padding: '14px 24px',
+                fontSize: '1rem',
+                fontWeight: 700,
+                borderRadius: '12px',
+                background: 'rgba(255,255,255,0.08)',
+                color: '#e2e8f0',
+                border: '1px solid rgba(255,255,255,0.15)',
+                cursor: 'pointer'
+              }}
+            >
+              📖 Continue Learning in Lessons Tab →
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -403,15 +472,42 @@ export default function DailyChallenge({ user }) {
 
         {/* Challenge Card */}
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-            <span style={{ fontSize: '2rem' }}>🎯</span>
-            <div>
-              <h2 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: '#f1f5f9' }}>{dc.title || 'Daily Challenge'}</h2>
-              <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
-                <span style={{ background: `${diffColor[dc.difficulty] || '#3b82f6'}20`, color: diffColor[dc.difficulty] || '#3b82f6', padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: `1px solid ${diffColor[dc.difficulty] || '#3b82f6'}40` }}>{dc.difficulty || 'Beginner'}</span>
-                <span style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: '1px solid rgba(245,158,11,0.2)' }}>+{dc.xp_reward || 100} XP</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '2rem' }}>🎯</span>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 800, color: '#f1f5f9' }}>{dc.title || 'Daily Challenge'}</h2>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
+                  <span style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8', padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, border: '1px solid rgba(99, 102, 241, 0.3)' }}>
+                    Challenge #{typeof dc.id === 'number' ? dc.id + 1 : 1} of 30
+                  </span>
+                  <span style={{ background: `${diffColor[dc.difficulty] || '#3b82f6'}20`, color: diffColor[dc.difficulty] || '#3b82f6', padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: `1px solid ${diffColor[dc.difficulty] || '#3b82f6'}40` }}>{dc.difficulty || 'Beginner'}</span>
+                  <span style={{ background: 'rgba(245,158,11,0.1)', color: '#f59e0b', padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600, border: '1px solid rgba(245,158,11,0.2)' }}>+{dc.xp_reward || 100} XP</span>
+                </div>
               </div>
             </div>
+
+            <button
+              onClick={() => fetchChallenge(true, typeof dc.id === 'number' ? (dc.id + 1) % 30 : -1)}
+              title="Switch to another challenge"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: '#cbd5e1',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                whiteSpace: 'nowrap',
+                flexShrink: 0
+              }}
+            >
+              <span>🔄</span> Next
+            </button>
           </div>
 
           <div style={{ background: 'rgba(0,0,0,0.25)', padding: '18px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)', lineHeight: '1.7', color: '#cbd5e1', fontSize: '0.95rem', whiteSpace: 'pre-wrap' }}>

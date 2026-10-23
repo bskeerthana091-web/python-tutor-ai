@@ -1584,24 +1584,460 @@ def get_chapter(chapter_id: int):
 
 # --- Daily Challenge System ---
 DAILY_CHALLENGES = [
-    {'id': 0, 'title': '🚀 Space Rocket Countdown', 'description': 'Write a function `space_countdown(start)` that returns a string counting down from `start` to 1, followed by "Blastoff!".\n\nExample: space_countdown(3) → "3 2 1 Blastoff!"', 'difficulty': 'Beginner', 'starter_code': '# Write your Python solution here...\n', 'expected_output': '3 2 1 Blastoff!', 'concept': 'Loops & Strings', 'xp_reward': 100, 'test_cases': [{'call': 'space_countdown(3)', 'expected': '3 2 1 Blastoff!'}, {'call': 'space_countdown(5)', 'expected': '5 4 3 2 1 Blastoff!'}]},
-    {'id': 1, 'title': '🔐 Secret Emoji Password Encoder', 'description': 'Write a function `encode_emoji(text)` that replaces "happy" with "😊" and "code" with "💻".\n\nExample: encode_emoji("I happy code") → "I 😊 💻"', 'difficulty': 'Beginner', 'starter_code': '# Write your Python solution here...\n', 'expected_output': 'I 😊 💻', 'concept': 'String Replacement', 'xp_reward': 100, 'test_cases': [{'call': 'encode_emoji("I happy code")', 'expected': 'I 😊 💻'}]},
-    {'id': 2, 'title': '⚡ Superhero Power Index', 'description': 'Write a function `superhero_power(powers)` that takes a list of integers and returns the sum of powers multiplied by 2.\n\nExample: superhero_power([10, 20, 30]) → 120', 'difficulty': 'Beginner', 'starter_code': '# Write your Python solution here...\n', 'expected_output': '120', 'concept': 'Lists & Math', 'xp_reward': 100, 'test_cases': [{'call': 'superhero_power([10, 20, 30])', 'expected': '120'}, {'call': 'superhero_power([5, 5])', 'expected': '20'}]},
-    {'id': 3, 'title': '🔮 Magic Number Doubler', 'description': 'Write a function `magic_double(n)` that doubles a number `n` if it is even, or triples it if it is odd.\n\nExample: magic_double(4) → 8, magic_double(3) → 9', 'difficulty': 'Beginner', 'starter_code': '# Write your Python solution here...\n', 'expected_output': '8', 'concept': 'Conditionals & Logic', 'xp_reward': 100, 'test_cases': [{'call': 'magic_double(4)', 'expected': '8'}, {'call': 'magic_double(3)', 'expected': '9'}]},
-    {'id': 4, 'title': 'Reverse a String', 'description': 'Write a function `reverse_str(s)` that returns the reversed version of a string.\n\nExample: reverse_str("hello") → "olleh"', 'difficulty': 'Beginner', 'starter_code': '# Write your Python solution here...\n', 'expected_output': 'olleh', 'concept': 'Strings', 'xp_reward': 100, 'test_cases': [{'call': 'reverse_str("hello")', 'expected': 'olleh'}, {'call': 'reverse_str("world")', 'expected': 'dlrow'}]},
-    {'id': 5, 'title': 'Count Vowels', 'description': 'Write a function `count_vowels(s)` that counts the number of vowels (a, e, i, o, u) in a string.\n\nExample: count_vowels("hello world") → 3', 'difficulty': 'Beginner', 'starter_code': '# Write your Python solution here...\n', 'expected_output': '3', 'concept': 'Strings & Loops', 'xp_reward': 100, 'test_cases': [{'call': 'count_vowels("hello world")', 'expected': '3'}, {'call': 'count_vowels("xyz")', 'expected': '0'}]},
-    {'id': 6, 'title': 'Palindrome Check', 'description': 'Write a function `is_palindrome(s)` that checks if a string is a palindrome.\n\nExample: is_palindrome("racecar") → True', 'difficulty': 'Intermediate', 'starter_code': '# Write your Python solution here...\n', 'expected_output': 'True', 'concept': 'Strings & Logic', 'xp_reward': 100, 'test_cases': [{'call': 'is_palindrome("racecar")', 'expected': 'True'}, {'call': 'is_palindrome("hello")', 'expected': 'False'}]},
-    {'id': 7, 'title': 'Fibonacci Sequence', 'description': 'Write a function `fibonacci(n)` that returns a list of the first n Fibonacci numbers.\n\nExample: fibonacci(7) → [0, 1, 1, 2, 3, 5, 8]', 'difficulty': 'Advanced', 'starter_code': '# Write your Python solution here...\n', 'expected_output': '[0, 1, 1, 2, 3, 5, 8]', 'concept': 'Recursion & Lists', 'xp_reward': 100, 'test_cases': [{'call': 'fibonacci(7)', 'expected': '[0, 1, 1, 2, 3, 5, 8]'}]}
+    {
+        'id': 0,
+        'title': '🚀 Space Rocket Countdown',
+        'description': 'Write a function `space_countdown(start)` that returns a string counting down from `start` to 1, followed by "Blastoff!".\n\nExample: space_countdown(3) → "3 2 1 Blastoff!"',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef space_countdown(start):\n    pass\n',
+        'expected_output': '3 2 1 Blastoff!',
+        'concept': 'Loops & Strings',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'space_countdown(3)', 'expected': '3 2 1 Blastoff!'},
+            {'call': 'space_countdown(5)', 'expected': '5 4 3 2 1 Blastoff!'}
+        ]
+    },
+    {
+        'id': 1,
+        'title': '🔐 Secret Emoji Password Encoder',
+        'description': 'Write a function `encode_emoji(text)` that replaces "happy" with "😊" and "code" with "💻".\n\nExample: encode_emoji("I happy code") → "I 😊 💻"',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef encode_emoji(text):\n    pass\n',
+        'expected_output': 'I 😊 💻',
+        'concept': 'String Replacement',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'encode_emoji("I happy code")', 'expected': 'I 😊 💻'},
+            {'call': 'encode_emoji("happy day code")', 'expected': '😊 day 💻'}
+        ]
+    },
+    {
+        'id': 2,
+        'title': '⚡ Superhero Power Index',
+        'description': 'Write a function `superhero_power(powers)` that takes a list of integers and returns the sum of powers multiplied by 2.\n\nExample: superhero_power([10, 20, 30]) → 120',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef superhero_power(powers):\n    pass\n',
+        'expected_output': '120',
+        'concept': 'Lists & Math',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'superhero_power([10, 20, 30])', 'expected': '120'},
+            {'call': 'superhero_power([5, 5])', 'expected': '20'}
+        ]
+    },
+    {
+        'id': 3,
+        'title': '🔮 Magic Number Doubler',
+        'description': 'Write a function `magic_double(n)` that doubles a number `n` if it is even, or triples it if it is odd.\n\nExample: magic_double(4) → 8, magic_double(3) → 9',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef magic_double(n):\n    pass\n',
+        'expected_output': '8',
+        'concept': 'Conditionals & Logic',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'magic_double(4)', 'expected': '8'},
+            {'call': 'magic_double(3)', 'expected': '9'}
+        ]
+    },
+    {
+        'id': 4,
+        'title': '🔄 Reverse a String',
+        'description': 'Write a function `reverse_str(s)` that returns the reversed version of a string.\n\nExample: reverse_str("hello") → "olleh"',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef reverse_str(s):\n    pass\n',
+        'expected_output': 'olleh',
+        'concept': 'Strings',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'reverse_str("hello")', 'expected': 'olleh'},
+            {'call': 'reverse_str("python")', 'expected': 'nohtyp'}
+        ]
+    },
+    {
+        'id': 5,
+        'title': '🔤 Count Vowels',
+        'description': 'Write a function `count_vowels(s)` that counts the number of vowels (a, e, i, o, u, case-insensitive) in a string.\n\nExample: count_vowels("hello world") → 3',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef count_vowels(s):\n    pass\n',
+        'expected_output': '3',
+        'concept': 'Strings & Loops',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'count_vowels("hello world")', 'expected': '3'},
+            {'call': 'count_vowels("Python")', 'expected': '1'},
+            {'call': 'count_vowels("xyz")', 'expected': '0'}
+        ]
+    },
+    {
+        'id': 6,
+        'title': '🔁 Palindrome Check',
+        'description': 'Write a function `is_palindrome(s)` that checks if a string is a palindrome (reads the same forward and backward, case-insensitive).\n\nExample: is_palindrome("racecar") → True',
+        'difficulty': 'Intermediate',
+        'starter_code': '# Write your Python solution here...\ndef is_palindrome(s):\n    pass\n',
+        'expected_output': 'True',
+        'concept': 'Strings & Logic',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'is_palindrome("racecar")', 'expected': 'True'},
+            {'call': 'is_palindrome("Madam")', 'expected': 'True'},
+            {'call': 'is_palindrome("hello")', 'expected': 'False'}
+        ]
+    },
+    {
+        'id': 7,
+        'title': '📈 Fibonacci Sequence',
+        'description': 'Write a function `fibonacci(n)` that returns a list of the first n Fibonacci numbers (starting with 0, 1).\n\nExample: fibonacci(5) → [0, 1, 1, 2, 3]',
+        'difficulty': 'Intermediate',
+        'starter_code': '# Write your Python solution here...\ndef fibonacci(n):\n    pass\n',
+        'expected_output': '[0, 1, 1, 2, 3]',
+        'concept': 'Recursion & Lists',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'fibonacci(5)', 'expected': '[0, 1, 1, 2, 3]'},
+            {'call': 'fibonacci(7)', 'expected': '[0, 1, 1, 2, 3, 5, 8]'}
+        ]
+    },
+    {
+        'id': 8,
+        'title': '➕ Sum of Even Numbers',
+        'description': 'Write a function `sum_evens(numbers)` that returns the sum of all even numbers in a list.\n\nExample: sum_evens([1, 2, 3, 4, 5, 6]) → 12',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef sum_evens(numbers):\n    pass\n',
+        'expected_output': '12',
+        'concept': 'Lists & Loops',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'sum_evens([1, 2, 3, 4, 5, 6])', 'expected': '12'},
+            {'call': 'sum_evens([1, 3, 5])', 'expected': '0'}
+        ]
+    },
+    {
+        'id': 9,
+        'title': '🏔️ Find the Maximum Number',
+        'description': 'Write a function `find_max(numbers)` that returns the largest number in a list without using the built-in max().\n\nExample: find_max([3, 9, 2, 14, 5]) → 14',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef find_max(numbers):\n    pass\n',
+        'expected_output': '14',
+        'concept': 'Algorithms & Lists',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'find_max([3, 9, 2, 14, 5])', 'expected': '14'},
+            {'call': 'find_max([-10, -5, -20])', 'expected': '-5'}
+        ]
+    },
+    {
+        'id': 10,
+        'title': '📖 Word Counter',
+        'description': 'Write a function `count_words(sentence)` that returns the total count of words in a sentence.\n\nExample: count_words("Python is super fun") → 4',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef count_words(sentence):\n    pass\n',
+        'expected_output': '4',
+        'concept': 'Strings',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'count_words("Python is super fun")', 'expected': '4'},
+            {'call': 'count_words("Hello")', 'expected': '1'}
+        ]
+    },
+    {
+        'id': 11,
+        'title': '🔠 Title Case Converter',
+        'description': 'Write a function `to_title_case(sentence)` that capitalizes the first letter of each word in a string.\n\nExample: to_title_case("hello world of python") → "Hello World Of Python"',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef to_title_case(sentence):\n    pass\n',
+        'expected_output': 'Hello World Of Python',
+        'concept': 'Strings & Methods',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'to_title_case("hello world of python")', 'expected': 'Hello World Of Python'},
+            {'call': 'to_title_case("learn code")', 'expected': 'Learn Code'}
+        ]
+    },
+    {
+        'id': 12,
+        'title': '🧹 Remove List Duplicates',
+        'description': 'Write a function `remove_duplicates(items)` that removes duplicate values from a list while keeping the original order.\n\nExample: remove_duplicates([1, 2, 2, 3, 1, 4]) → [1, 2, 3, 4]',
+        'difficulty': 'Intermediate',
+        'starter_code': '# Write your Python solution here...\ndef remove_duplicates(items):\n    pass\n',
+        'expected_output': '[1, 2, 3, 4]',
+        'concept': 'Lists & Sets',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'remove_duplicates([1, 2, 2, 3, 1, 4])', 'expected': '[1, 2, 3, 4]'},
+            {'call': 'remove_duplicates(["a", "b", "a"])', 'expected': "['a', 'b']"}
+        ]
+    },
+    {
+        'id': 13,
+        'title': '🔢 Factorial Calculator',
+        'description': 'Write a function `factorial(n)` that returns the factorial of a positive integer n (where 0! = 1).\n\nExample: factorial(5) → 120',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef factorial(n):\n    pass\n',
+        'expected_output': '120',
+        'concept': 'Math & Recursion',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'factorial(5)', 'expected': '120'},
+            {'call': 'factorial(0)', 'expected': '1'},
+            {'call': 'factorial(3)', 'expected': '6'}
+        ]
+    },
+    {
+        'id': 14,
+        'title': '🛡️ Prime Number Checker',
+        'description': 'Write a function `is_prime(n)` that returns True if n is a prime number (greater than 1), or False otherwise.\n\nExample: is_prime(7) → True, is_prime(4) → False',
+        'difficulty': 'Intermediate',
+        'starter_code': '# Write your Python solution here...\ndef is_prime(n):\n    pass\n',
+        'expected_output': 'True',
+        'concept': 'Math & Logic',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'is_prime(7)', 'expected': 'True'},
+            {'call': 'is_prime(4)', 'expected': 'False'},
+            {'call': 'is_prime(1)', 'expected': 'False'},
+            {'call': 'is_prime(13)', 'expected': 'True'}
+        ]
+    },
+    {
+        'id': 15,
+        'title': '🤝 Common Elements in Lists',
+        'description': 'Write a function `common_elements(list1, list2)` that returns a sorted list of elements that appear in both lists.\n\nExample: common_elements([1, 2, 3, 4], [2, 4, 6]) → [2, 4]',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef common_elements(list1, list2):\n    pass\n',
+        'expected_output': '[2, 4]',
+        'concept': 'Lists & Sets',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'common_elements([1, 2, 3, 4], [2, 4, 6])', 'expected': '[2, 4]'},
+            {'call': 'common_elements([5, 10], [20, 30])', 'expected': '[]'}
+        ]
+    },
+    {
+        'id': 16,
+        'title': '🌡️ Celsius to Fahrenheit',
+        'description': 'Write a function `celsius_to_fahrenheit(c)` that converts Celsius to Fahrenheit using the formula (c * 9/5) + 32.\n\nExample: celsius_to_fahrenheit(0) → 32.0, celsius_to_fahrenheit(100) → 212.0',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef celsius_to_fahrenheit(c):\n    pass\n',
+        'expected_output': '32.0',
+        'concept': 'Math & Formulas',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'celsius_to_fahrenheit(0)', 'expected': '32.0'},
+            {'call': 'celsius_to_fahrenheit(100)', 'expected': '212.0'},
+            {'call': 'celsius_to_fahrenheit(25)', 'expected': '77.0'}
+        ]
+    },
+    {
+        'id': 17,
+        'title': '🧩 Anagram Checker',
+        'description': 'Write a function `is_anagram(s1, s2)` that returns True if the two strings are anagrams of each other (case-insensitive, ignoring spaces).\n\nExample: is_anagram("listen", "silent") → True',
+        'difficulty': 'Intermediate',
+        'starter_code': '# Write your Python solution here...\ndef is_anagram(s1, s2):\n    pass\n',
+        'expected_output': 'True',
+        'concept': 'Strings & Sorting',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'is_anagram("listen", "silent")', 'expected': 'True'},
+            {'call': 'is_anagram("hello", "world")', 'expected': 'False'}
+        ]
+    },
+    {
+        'id': 18,
+        'title': '🎪 FizzBuzz Challenge',
+        'description': 'Write a function `fizz_buzz(n)` that returns "FizzBuzz" if n is divisible by both 3 and 5, "Fizz" if divisible by 3, "Buzz" if divisible by 5, or str(n) otherwise.\n\nExample: fizz_buzz(15) → "FizzBuzz", fizz_buzz(9) → "Fizz", fizz_buzz(10) → "Buzz", fizz_buzz(7) → "7"',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef fizz_buzz(n):\n    pass\n',
+        'expected_output': 'FizzBuzz',
+        'concept': 'Conditionals & Modulo',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'fizz_buzz(15)', 'expected': 'FizzBuzz'},
+            {'call': 'fizz_buzz(9)', 'expected': 'Fizz'},
+            {'call': 'fizz_buzz(10)', 'expected': 'Buzz'},
+            {'call': 'fizz_buzz(7)', 'expected': '7'}
+        ]
+    },
+    {
+        'id': 19,
+        'title': '🥈 Second Largest Number',
+        'description': 'Write a function `second_largest(numbers)` that returns the second largest distinct number in a list.\n\nExample: second_largest([10, 20, 4, 45, 99]) → 45',
+        'difficulty': 'Intermediate',
+        'starter_code': '# Write your Python solution here...\ndef second_largest(numbers):\n    pass\n',
+        'expected_output': '45',
+        'concept': 'Lists & Logic',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'second_largest([10, 20, 4, 45, 99])', 'expected': '45'},
+            {'call': 'second_largest([5, 5, 4, 2])', 'expected': '4'}
+        ]
+    },
+    {
+        'id': 20,
+        'title': '🥞 Flatten 2D List',
+        'description': 'Write a function `flatten(matrix)` that takes a list of lists and returns a single flattened 1D list.\n\nExample: flatten([[1, 2], [3, 4], [5]]) → [1, 2, 3, 4, 5]',
+        'difficulty': 'Intermediate',
+        'starter_code': '# Write your Python solution here...\ndef flatten(matrix):\n    pass\n',
+        'expected_output': '[1, 2, 3, 4, 5]',
+        'concept': 'Nested Lists',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'flatten([[1, 2], [3, 4], [5]])', 'expected': '[1, 2, 3, 4, 5]'},
+            {'call': 'flatten([[10], [20, 30]])', 'expected': '[10, 20, 30]'}
+        ]
+    },
+    {
+        'id': 21,
+        'title': '🎯 Character Frequency',
+        'description': 'Write a function `char_frequency(text, ch)` that returns the number of times character `ch` appears in `text` (case-sensitive).\n\nExample: char_frequency("banana", "a") → 3',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef char_frequency(text, ch):\n    pass\n',
+        'expected_output': '3',
+        'concept': 'Strings & Counting',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'char_frequency("banana", "a")', 'expected': '3'},
+            {'call': 'char_frequency("hello world", "l")', 'expected': '3'}
+        ]
+    },
+    {
+        'id': 22,
+        'title': '⚖️ Valid Parentheses',
+        'description': 'Write a function `valid_parentheses(s)` that returns True if all parentheses in `s` are properly opened and closed in valid pairs.\n\nExample: valid_parentheses("()") → True, valid_parentheses(")( ") → False',
+        'difficulty': 'Advanced',
+        'starter_code': '# Write your Python solution here...\ndef valid_parentheses(s):\n    pass\n',
+        'expected_output': 'True',
+        'concept': 'Data Structures & Stacks',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'valid_parentheses("()")', 'expected': 'True'},
+            {'call': 'valid_parentheses("(())")', 'expected': 'True'},
+            {'call': 'valid_parentheses(")( ")', 'expected': 'False'},
+            {'call': 'valid_parentheses("(()")', 'expected': 'False'}
+        ]
+    },
+    {
+        'id': 23,
+        'title': '➕ Sum of Digits',
+        'description': 'Write a function `sum_digits(n)` that returns the sum of all digits of a non-negative integer n.\n\nExample: sum_digits(1234) → 10',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef sum_digits(n):\n    pass\n',
+        'expected_output': '10',
+        'concept': 'Math & Strings',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'sum_digits(1234)', 'expected': '10'},
+            {'call': 'sum_digits(905)', 'expected': '14'}
+        ]
+    },
+    {
+        'id': 24,
+        'title': '🧮 Simple Calculator',
+        'description': 'Write a function `calculate(a, b, op)` that supports "+", "-", "*", and "/". Returns the computed result as a float or int.\n\nExample: calculate(10, 5, "+") → 15, calculate(10, 2, "/") → 5.0',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef calculate(a, b, op):\n    pass\n',
+        'expected_output': '15',
+        'concept': 'Arithmetic & Operators',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'calculate(10, 5, "+")', 'expected': '15'},
+            {'call': 'calculate(10, 5, "-")', 'expected': '5'},
+            {'call': 'calculate(4, 3, "*")', 'expected': '12'}
+        ]
+    },
+    {
+        'id': 25,
+        'title': '🔄 Invert a Dictionary',
+        'description': 'Write a function `invert_dict(d)` that swaps keys and values in a dictionary.\n\nExample: invert_dict({"a": 1, "b": 2}) → {1: "a", 2: "b"}',
+        'difficulty': 'Intermediate',
+        'starter_code': '# Write your Python solution here...\ndef invert_dict(d):\n    pass\n',
+        'expected_output': "{1: 'a', 2: 'b'}",
+        'concept': 'Dictionaries',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'invert_dict({"a": 1, "b": 2})', 'expected': "{1: 'a', 2: 'b'}"}
+        ]
+    },
+    {
+        'id': 26,
+        'title': '✖️ Multiply List Elements',
+        'description': 'Write a function `multiply_elements(lst, factor)` that returns a new list where each number in `lst` is multiplied by `factor`.\n\nExample: multiply_elements([1, 2, 3], 3) → [3, 6, 9]',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef multiply_elements(lst, factor):\n    pass\n',
+        'expected_output': '[3, 6, 9]',
+        'concept': 'List Comprehension',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'multiply_elements([1, 2, 3], 3)', 'expected': '[3, 6, 9]'},
+            {'call': 'multiply_elements([4, 5], 2)', 'expected': '[8, 10]'}
+        ]
+    },
+    {
+        'id': 27,
+        'title': '🔎 Find Missing Number',
+        'description': 'Write a function `missing_number(nums, n)` that finds the missing number from a list containing numbers from 1 to n with one number missing.\n\nExample: missing_number([1, 2, 4, 5], 5) → 3',
+        'difficulty': 'Intermediate',
+        'starter_code': '# Write your Python solution here...\ndef missing_number(nums, n):\n    pass\n',
+        'expected_output': '3',
+        'concept': 'Math & Sets',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'missing_number([1, 2, 4, 5], 5)', 'expected': '3'},
+            {'call': 'missing_number([2, 3, 1, 5], 5)', 'expected': '4'}
+        ]
+    },
+    {
+        'id': 28,
+        'title': '✂️ Truncate String',
+        'description': 'Write a function `truncate(s, max_len)` that returns the string truncated to `max_len` characters with "..." appended if it exceeds `max_len`. If length <= max_len, return `s` unchanged.\n\nExample: truncate("Hello World", 5) → "Hello...", truncate("Hi", 5) → "Hi"',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef truncate(s, max_len):\n    pass\n',
+        'expected_output': 'Hello...',
+        'concept': 'String Slicing',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'truncate("Hello World", 5)', 'expected': 'Hello...'},
+            {'call': 'truncate("Hi", 5)', 'expected': 'Hi'}
+        ]
+    },
+    {
+        'id': 29,
+        'title': '✨ Filter Positive Numbers',
+        'description': 'Write a function `filter_positives(nums)` that returns only the strictly positive numbers (> 0) from a list.\n\nExample: filter_positives([-2, 5, 0, -1, 8]) → [5, 8]',
+        'difficulty': 'Beginner',
+        'starter_code': '# Write your Python solution here...\ndef filter_positives(nums):\n    pass\n',
+        'expected_output': '[5, 8]',
+        'concept': 'Lists & Filtering',
+        'xp_reward': 100,
+        'test_cases': [
+            {'call': 'filter_positives([-2, 5, 0, -1, 8])', 'expected': '[5, 8]'},
+            {'call': 'filter_positives([-1, -2, 0])', 'expected': '[]'}
+        ]
+    }
 ]
 
 @app.get('/daily-challenge')
-def get_daily_challenge(email: str = '', db: Session = Depends(get_db)):
+def get_daily_challenge(
+    email: str = '',
+    completed: str = '',
+    advance: bool = False,
+    challenge_id: int = -1,
+    db: Session = Depends(get_db)
+):
     today = dt.datetime.now()
     today_str = today.strftime('%Y-%m-%d')
     student = None
     completed_ids = set()
     completed_today = False
     
+    # 1. Parse client completed challenge IDs
+    client_completed_ids = set()
+    if completed:
+        for cid_str in completed.split(','):
+            cid_str = cid_str.strip()
+            if cid_str.isdigit():
+                client_completed_ids.add(int(cid_str))
+                
     if email:
         student = db.query(Student).filter(Student.email == email).first()
         if not student:
@@ -1617,28 +2053,36 @@ def get_daily_challenge(email: str = '', db: Session = Depends(get_db)):
             db.add(student)
             db.commit()
             db.refresh(student)
+            
     if not student:
         student = db.query(Student).first()
         
     if student:
-        completed = db.query(CompletedChallenge).filter(CompletedChallenge.student_id == student.id).all()
-        completed_ids = {c.challenge_id for c in completed}
-        for c in completed:
+        db_completed = db.query(CompletedChallenge).filter(CompletedChallenge.student_id == student.id).all()
+        for c in db_completed:
+            completed_ids.add(c.challenge_id)
             if c.completed_at and c.completed_at.strftime('%Y-%m-%d') == today_str:
                 completed_today = True
-        
-    # Select uncompleted challenges for this user
-    uncompleted = [c for c in DAILY_CHALLENGES if c['id'] not in completed_ids]
+
+    # Combine DB and client localStorage completed IDs for bulletproof tracking
+    all_completed = completed_ids.union(client_completed_ids)
+    
+    # Select uncompleted challenges for this specific student
+    uncompleted = [c for c in DAILY_CHALLENGES if c['id'] not in all_completed]
     
     if not uncompleted:
-        # If student completed all challenges, reset cycle
+        # If student completed all 30 challenges, allow recycling while prioritizing remaining
         uncompleted = DAILY_CHALLENGES
-        
-    # Seed challenge by day of year + student ID + email hash to ensure every user gets a different, non-repeating challenge
-    import hashlib
-    email_seed = int(hashlib.md5((email or 'student').encode()).hexdigest()[:6], 16) if email else 42
-    day_seed = (today.year * 1000 + today.timetuple().tm_yday + (student.id if student else 1) * 13 + email_seed)
-    challenge = uncompleted[day_seed % len(uncompleted)]
+
+    # If specific challenge requested by user (e.g. skip to next or jump)
+    if challenge_id >= 0:
+        found = next((c for c in uncompleted if c['id'] == challenge_id), None)
+        if not found:
+            found = next((c for c in DAILY_CHALLENGES if c['id'] == challenge_id), uncompleted[0])
+        challenge = found
+    else:
+        # Sequential progression: always serve the first uncompleted challenge for this person!
+        challenge = uncompleted[0]
     
     tomorrow = (today + dt.timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     seconds_remaining = int((tomorrow - today).total_seconds())
@@ -1647,8 +2091,11 @@ def get_daily_challenge(email: str = '', db: Session = Depends(get_db)):
         **challenge,
         'seconds_remaining': seconds_remaining,
         'date': today_str,
-        'total_completed': len(completed_ids),
-        'completed_today': completed_today
+        'total_completed': len(all_completed),
+        'completed_ids': sorted(list(all_completed)),
+        'completed_today': completed_today and not advance,
+        'total_challenges': len(DAILY_CHALLENGES),
+        'remaining_count': len(uncompleted)
     }
 
 class DailySubmitRequest(BaseModel):
@@ -1670,6 +2117,7 @@ def submit_daily(req: DailySubmitRequest, db: Session = Depends(get_db)):
     actual = stdout.strip()
     expected = challenge['expected_output'].strip()
     xp = 0
+    all_completed_ids = []
 
     if passed:
         xp = challenge['xp_reward']
@@ -1693,7 +2141,7 @@ def submit_daily(req: DailySubmitRequest, db: Session = Depends(get_db)):
 
         if student:
             student.xp_points += xp
-            # Record challenge completion so it won't repeat
+            # Record challenge completion so it won't repeat for this student
             already_done = db.query(CompletedChallenge).filter(
                 CompletedChallenge.student_id == student.id,
                 CompletedChallenge.challenge_id == challenge['id']
@@ -1703,12 +2151,18 @@ def submit_daily(req: DailySubmitRequest, db: Session = Depends(get_db)):
                 db.add(new_done)
             db.commit()
 
+            # Retrieve all completed challenge ids for this student
+            completed_records = db.query(CompletedChallenge).filter(CompletedChallenge.student_id == student.id).all()
+            all_completed_ids = sorted(list({c.challenge_id for c in completed_records}))
+
     return {
         'passed': passed,
         'output': actual,
         'error': stderr,
         'expected': expected,
-        'xp_awarded': xp
+        'xp_awarded': xp,
+        'completed_challenge_id': challenge['id'] if passed else None,
+        'completed_ids': all_completed_ids
     }
 
 # --- Interview Prep System ---

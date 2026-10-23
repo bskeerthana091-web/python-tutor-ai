@@ -199,13 +199,13 @@ export default function Gamification({ user }) {
   const unclaimedCount = DAILY_QUESTS.filter(q => !claimedQuestIds.includes(q.id)).length;
 
   return (
-    <div className="app-container" style={{ padding: '30px', gap: '25px', display: 'flex', flexDirection: 'column' }}>
+    <div className="app-container gamification-page" style={{ padding: '24px 16px', gap: '20px', display: 'flex', flexDirection: 'column', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
       
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
-        <div>
-          <h1 style={{ fontSize: '2rem', margin: 0, fontWeight: 800 }}>Student Profile & Achievements</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '5px' }}>
+      <div className="profile-header-wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
+        <div style={{ flex: '1 1 280px', minWidth: 0 }}>
+          <h1 style={{ fontSize: '1.75rem', margin: 0, fontWeight: 800, lineHeight: 1.2 }}>Student Profile & Achievements</h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', marginTop: '6px' }}>
             Track your XP, badges, and complete daily quests to earn rewards!
           </p>
         </div>
@@ -216,7 +216,7 @@ export default function Gamification({ user }) {
             disabled={claimingId !== null}
             className="btn-primary"
             style={{
-              padding: '10px 20px',
+              padding: '10px 18px',
               fontSize: '0.85rem',
               borderRadius: '10px',
               fontWeight: 'bold',
@@ -225,7 +225,8 @@ export default function Gamification({ user }) {
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              flexShrink: 0
             }}
           >
             <span>⚡</span> Claim All Daily XP ({unclaimedCount} Quests)
@@ -405,32 +406,37 @@ export default function Gamification({ user }) {
                 const isClaiming = claimingId === quest.id;
 
                 return (
-                  <div key={quest.id} style={{ 
+                  <div key={quest.id} className="profile-quest-card" style={{ 
                     display: 'flex', 
                     justifyContent: 'space-between', 
                     alignItems: 'center', 
-                    padding: '16px 20px', 
+                    flexWrap: 'wrap',
+                    gap: '12px',
+                    padding: '14px 18px', 
                     background: isClaimed ? 'rgba(16, 185, 129, 0.08)' : 'rgba(255,255,255,0.02)', 
                     borderRadius: '12px',
                     border: `1px solid ${isClaimed ? 'rgba(16, 185, 129, 0.25)' : 'var(--border)'}`,
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box',
+                    width: '100%'
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1 }}>
-                      <span style={{ fontSize: '1.25rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 210px', minWidth: 0 }}>
+                      <span style={{ fontSize: '1.25rem', flexShrink: 0 }}>
                         {isClaimed ? '🟢' : '⚪'}
                       </span>
                       <span style={{ 
-                        fontSize: '0.95rem', 
+                        fontSize: '0.92rem', 
                         color: isClaimed ? 'var(--text-secondary)' : '#ffffff', 
                         textDecoration: isClaimed ? 'line-through' : 'none',
-                        lineHeight: '1.4'
+                        lineHeight: '1.4',
+                        wordBreak: 'break-word'
                       }}>
                         {quest.text}
                       </span>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginLeft: '15px' }}>
-                      <span style={{ color: 'var(--warning)', fontWeight: 800, fontSize: '0.95rem', whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0, marginLeft: 'auto' }}>
+                      <span style={{ color: 'var(--warning)', fontWeight: 800, fontSize: '0.92rem', whiteSpace: 'nowrap' }}>
                         {quest.rewardText}
                       </span>
                       
@@ -441,7 +447,7 @@ export default function Gamification({ user }) {
                           border: '1px solid rgba(16, 185, 129, 0.3)', 
                           padding: '6px 14px', 
                           borderRadius: '20px', 
-                          fontSize: '0.8rem', 
+                          fontSize: '0.78rem', 
                           fontWeight: 700,
                           display: 'flex',
                           alignItems: 'center',
@@ -480,9 +486,9 @@ export default function Gamification({ user }) {
           </div>
 
           {/* Badges Earned */}
-          <div className="glass-panel animate-fade-in" style={{ padding: '25px', animationDelay: '0.1s' }}>
-            <h2 style={{ fontSize: '1.2rem', marginBottom: '20px' }}>Badges Earned</h2>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px' }}>
+          <div className="glass-panel animate-fade-in" style={{ padding: '22px', animationDelay: '0.1s' }}>
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '16px' }}>Badges Earned</h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
               {profile.badges.length > 0 ? (
                 profile.badges.map((badgeName, idx) => {
                   const bDetails = BADGE_TEMPLATES[badgeName.trim()] || {
@@ -494,18 +500,21 @@ export default function Gamification({ user }) {
                     <div key={idx} style={{ 
                       background: 'rgba(255,255,255,0.02)', 
                       border: '1px solid var(--border)', 
-                      padding: '15px', 
+                      padding: '16px 12px', 
                       borderRadius: '12px',
-                      width: '180px',
+                      flex: '1 1 calc(50% - 12px)',
+                      minWidth: '130px',
+                      maxWidth: '220px',
                       textAlign: 'center',
+                      boxSizing: 'border-box',
                       transition: 'all 0.3s'
                     }}
                     onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
                     onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
-                      <div style={{ fontSize: '2.5rem', marginBottom: '8px', filter: `drop-shadow(0 0 10px ${bDetails.color}40)` }}>{bDetails.icon}</div>
-                      <h3 style={{ fontSize: '0.95rem', marginBottom: '4px', color: bDetails.color, fontWeight: 'bold' }}>{badgeName}</h3>
-                      <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', lineHeight: '1.3' }}>{bDetails.desc}</p>
+                      <div style={{ fontSize: '2.4rem', marginBottom: '8px', filter: `drop-shadow(0 0 10px ${bDetails.color}40)` }}>{bDetails.icon}</div>
+                      <h3 style={{ fontSize: '0.92rem', marginBottom: '4px', color: bDetails.color, fontWeight: 'bold' }}>{badgeName}</h3>
+                      <p style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', lineHeight: '1.3' }}>{bDetails.desc}</p>
                     </div>
                   );
                 })
