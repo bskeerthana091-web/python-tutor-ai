@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api.js';
 
 export default function Gamification({ user }) {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -199,8 +201,151 @@ export default function Gamification({ user }) {
   const unclaimedCount = DAILY_QUESTS.filter(q => !claimedQuestIds.includes(q.id)).length;
 
   return (
-    <div className="app-container gamification-page" style={{ padding: '24px 16px', gap: '20px', display: 'flex', flexDirection: 'column', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+    <div className="app-container gamification-page" style={{ padding: '20px 14px', gap: '18px', display: 'flex', flexDirection: 'column', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
       
+      {/* Mobile-Friendly Return & Quick Navigation Bar */}
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95))',
+        border: '1.5px solid rgba(56, 189, 248, 0.35)',
+        borderRadius: '14px',
+        padding: '12px 14px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.25)',
+        width: '100%',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+          <button
+            onClick={() => navigate('/learn')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              color: '#ffffff',
+              background: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '0.88rem',
+              fontWeight: 700,
+              boxShadow: '0 2px 10px rgba(37, 99, 235, 0.35)',
+              flexShrink: 0
+            }}
+          >
+            <span>←</span> Back to Lessons & Editor
+          </button>
+          
+          <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600 }}>
+            Quick Switch Tabs:
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+          <Link
+            to="/learn?tab=lessons"
+            style={{
+              flex: '1 1 calc(25% - 6px)',
+              minWidth: '75px',
+              textAlign: 'center',
+              padding: '8px 6px',
+              borderRadius: '8px',
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              color: '#ffffff',
+              textDecoration: 'none',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              boxSizing: 'border-box'
+            }}
+          >
+            <span>📖</span> Lessons
+          </Link>
+
+          <Link
+            to="/learn?tab=ai"
+            style={{
+              flex: '1 1 calc(25% - 6px)',
+              minWidth: '75px',
+              textAlign: 'center',
+              padding: '8px 6px',
+              borderRadius: '8px',
+              background: 'rgba(59, 130, 246, 0.15)',
+              border: '1px solid rgba(59, 130, 246, 0.35)',
+              color: '#60a5fa',
+              textDecoration: 'none',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              boxSizing: 'border-box'
+            }}
+          >
+            <span>🤖</span> AI Tutor
+          </Link>
+
+          <Link
+            to="/learn?tab=quiz"
+            style={{
+              flex: '1 1 calc(25% - 6px)',
+              minWidth: '75px',
+              textAlign: 'center',
+              padding: '8px 6px',
+              borderRadius: '8px',
+              background: 'rgba(16, 185, 129, 0.15)',
+              border: '1px solid rgba(16, 185, 129, 0.35)',
+              color: '#34d399',
+              textDecoration: 'none',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              boxSizing: 'border-box'
+            }}
+          >
+            <span>📝</span> Quiz
+          </Link>
+
+          <Link
+            to="/daily"
+            style={{
+              flex: '1 1 calc(25% - 6px)',
+              minWidth: '75px',
+              textAlign: 'center',
+              padding: '8px 6px',
+              borderRadius: '8px',
+              background: 'rgba(245, 158, 11, 0.15)',
+              border: '1px solid rgba(245, 158, 11, 0.35)',
+              color: '#fbbf24',
+              textDecoration: 'none',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              boxSizing: 'border-box'
+            }}
+          >
+            <span>🎯</span> Daily Qs
+          </Link>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="profile-header-wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
         <div style={{ flex: '1 1 280px', minWidth: 0 }}>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import CodeEditor from './CodeEditor.jsx';
 import AITutor from './AITutor.jsx';
@@ -8,7 +9,30 @@ import CodeExplainer from './CodeExplainer.jsx';
 import { API_BASE_URL } from '../config/api.js';
 
 export default function MainLearning() {
-  const [activeTab, setActiveTab] = useState('lessons');
+  const location = useLocation();
+
+  const getInitialTab = () => {
+    try {
+      const search = new URLSearchParams(window.location.search);
+      const tab = search.get('tab');
+      if (tab && ['lessons', 'ai', 'visualizer', 'quiz', 'analysis', 'explain'].includes(tab)) {
+        return tab;
+      }
+    } catch {}
+    return 'lessons';
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
+
+  // Sync activeTab whenever URL query changes (e.g., navigating from profile to /learn?tab=ai or /learn?tab=quiz)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabParam = params.get('tab') || location.state?.tab;
+    if (tabParam && ['lessons', 'ai', 'visualizer', 'quiz', 'analysis', 'explain'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [location.search, location.state]);
+
   const [currentError, setCurrentError] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [selectedChapter, setSelectedChapter] = useState(null);

@@ -33,16 +33,55 @@ function NavBar({ user, onLogout }) {
     { to: '/gamification', label: '⭐ Profile & XP' }
   ];
 
+  const mobileNavItems = [
+    { to: '/learn?tab=lessons', label: '📖 Lessons & Code Editor', badge: 'Core' },
+    { to: '/learn?tab=ai', label: '🤖 AI Python Tutor', badge: 'AI' },
+    { to: '/learn?tab=quiz', label: '📝 Adaptive Quizzes', badge: 'Practice' },
+    { to: '/learn?tab=visualizer', label: '📊 Code Visualizer', badge: 'Tool' },
+    { to: '/daily', label: '🎯 Daily Challenges (30 Qs)', badge: '+100 XP' },
+    { to: '/interview', label: '🎤 Mock Interview Prep', badge: 'Prep' },
+    { to: '/leaderboard', label: '🏆 Student Leaderboard', badge: 'Rank' },
+    { to: '/analytics', label: '📊 Learning Analytics', badge: 'Stats' },
+    { to: '/resume', label: '📄 Resume Builder', badge: 'Career' },
+    { to: '/gamification', label: '⭐ Student Profile & Badges', badge: 'Profile' }
+  ];
+
   return (
     <>
       <nav className="nav-bar" style={{ padding: '10px 16px', position: 'sticky', top: 0, zIndex: 1000, background: '#111827', borderBottom: '1px solid var(--border)' }}>
-        {/* Brand */}
-        <Link to="/learn" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
-          <img src="/logo.png" alt="PyAI Logo" style={{ width: '30px', height: '30px', objectFit: 'contain' }} />
-          <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, background: 'linear-gradient(135deg, #e2e8f0, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', whiteSpace: 'nowrap' }}>
-            PyAI Tutor
-          </h2>
-        </Link>
+        {/* Brand & Dynamic Back Button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {location.pathname !== '/learn' && (
+            <Link 
+              to="/learn" 
+              title="Back to Lessons"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                background: 'rgba(59, 130, 246, 0.2)',
+                border: '1px solid rgba(59, 130, 246, 0.45)',
+                color: '#38bdf8',
+                padding: '4px 10px',
+                borderRadius: '8px',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                textDecoration: 'none',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              <span>←</span>
+              <span>Back</span>
+            </Link>
+          )}
+
+          <Link to="/learn" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+            <img src="/logo.png" alt="PyAI Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+            <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, background: 'linear-gradient(135deg, #e2e8f0, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', whiteSpace: 'nowrap' }}>
+              PyAI Tutor
+            </h2>
+          </Link>
+        </div>
 
         {/* Desktop Nav Links (Hidden on mobile via CSS) */}
         <div className="nav-links-desktop" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -84,8 +123,8 @@ function NavBar({ user, onLogout }) {
               textDecoration: 'none',
               padding: '3px 8px',
               borderRadius: '20px',
-              background: 'rgba(59, 130, 246, 0.12)',
-              border: '1px solid rgba(59, 130, 246, 0.35)',
+              background: location.pathname === '/gamification' ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.12)',
+              border: location.pathname === '/gamification' ? '1.5px solid #3b82f6' : '1px solid rgba(59, 130, 246, 0.35)',
               transition: 'all 0.2s ease'
             }}
           >
@@ -162,21 +201,30 @@ function NavBar({ user, onLogout }) {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(10, 15, 28, 0.96)',
+          background: 'rgba(10, 15, 28, 0.98)',
           backdropFilter: 'blur(16px)',
           zIndex: 999,
-          padding: '20px 16px',
+          padding: '16px',
           display: 'flex',
           flexDirection: 'column',
           gap: '8px',
           animation: 'fadeIn 0.2s ease-out',
           overflowY: 'auto'
         }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>
-            Navigation Menu
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '1px' }}>
+              Jump Directly To:
+            </span>
+            <button 
+              onClick={() => setMobileMenuOpen(false)}
+              style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '0.9rem', cursor: 'pointer' }}
+            >
+              Close ✕
+            </button>
           </div>
-          {navItems.map(item => {
-            const isActive = location.pathname === item.to;
+
+          {mobileNavItems.map(item => {
+            const isActive = location.pathname + location.search === item.to || location.pathname === item.to;
             return (
               <Link
                 key={item.to}
@@ -185,17 +233,23 @@ function NavBar({ user, onLogout }) {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  padding: '12px 16px',
+                  justifyContent: 'space-between',
+                  padding: '11px 14px',
                   borderRadius: '10px',
                   textDecoration: 'none',
-                  fontSize: '0.98rem',
+                  fontSize: '0.94rem',
                   fontWeight: isActive ? 700 : 500,
                   color: isActive ? '#38bdf8' : '#e2e8f0',
                   background: isActive ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255,255,255,0.03)',
                   border: isActive ? '1px solid rgba(56, 189, 248, 0.35)' : '1px solid rgba(255,255,255,0.05)'
                 }}
               >
-                {item.label}
+                <span>{item.label}</span>
+                {item.badge && (
+                  <span style={{ fontSize: '0.72rem', padding: '2px 7px', borderRadius: '10px', background: 'rgba(255,255,255,0.08)', color: '#94a3b8' }}>
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             );
           })}
