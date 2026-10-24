@@ -138,59 +138,38 @@ export default function AITutor({ activeTab, currentError }) {
     return { lineNum, title, explanation, hint };
   };
 
-  if (activeTab === 'analysis' && currentError) {
-    const details = parseErrorDetails(currentError);
-    return (
-      <div className="glass-panel" style={{ height: '100%', padding: '20px', display: 'flex', flexDirection: 'column', overflowY: 'auto', gap: '16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ color: 'var(--error)', margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>🔍</span> Error Analysis
-          </h3>
-          {details?.lineNum && (
-            <span style={{ 
-              background: 'rgba(239, 68, 68, 0.2)', 
-              color: '#f87171', 
-              padding: '3px 10px', 
-              borderRadius: '12px', 
-              fontWeight: 700, 
-              fontSize: '0.8rem',
-              border: '1px solid rgba(239, 68, 68, 0.4)'
-            }}>
-              Line {details.lineNum}
-            </span>
-          )}
-        </div>
+  const QUICK_QUESTIONS = [
+    "How do Python loops work with range()?",
+    "Explain functions and return statements",
+    "What is the difference between list and tuple?",
+    "How to handle exceptions with try-except?"
+  ];
 
-        {/* Traceback Box */}
-        <div style={{ background: 'rgba(239, 68, 68, 0.08)', padding: '14px', borderRadius: '10px', borderLeft: '4px solid var(--error)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-          <pre style={{ margin: 0, whiteSpace: 'pre-wrap', color: '#fca5a5', fontFamily: 'monospace', fontSize: '0.86rem', lineHeight: '1.5' }}>
-            {currentError}
-          </pre>
-        </div>
-
-        {/* AI Explanatory Guide */}
-        {details && (
-          <div style={{ background: 'rgba(30, 41, 59, 0.6)', border: '1px solid #334155', borderRadius: '10px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div style={{ fontWeight: 800, color: '#f1f5f9', fontSize: '0.95rem' }}>
-              💡 {details.title}
-            </div>
-            <div style={{ fontSize: '0.88rem', color: '#cbd5e1', lineHeight: '1.6' }}>
-              {details.explanation}
-            </div>
-            <div style={{ fontSize: '0.85rem', color: '#93c5fd', background: 'rgba(59, 130, 246, 0.1)', padding: '10px 12px', borderRadius: '8px', border: '1px solid rgba(59, 130, 246, 0.2)', lineHeight: '1.5' }}>
-              <strong>🛠️ How to fix:</strong> {details.hint}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+  const handleQuickAsk = (q) => {
+    setInput(q);
+    setMessages(prev => [...prev, { sender: 'user', text: q }]);
+    setLoading(true);
+    axios.post(`${API_BASE_URL}/ask`, { question: q })
+      .then(res => setMessages(prev => [...prev, { sender: 'ai', text: cleanText(res.data.answer) }]))
+      .catch(() => setMessages(prev => [...prev, { sender: 'ai', text: 'Sorry, my server is currently offline.' }]))
+      .finally(() => {
+        setLoading(false);
+        setInput('');
+      });
+  };
 
   return (
     <div className="glass-panel" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '15px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <h3 style={{ margin: 0, flex: 1 }}>AI Tutor Chat</h3>
-        <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', background: 'rgba(59,130,246,0.08)', padding: '3px 8px', borderRadius: '8px' }}>🎤 Voice Enabled</span>
+      <div style={{ padding: '15px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '1.3rem' }}>🤖</span>
+          <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>AI Python Tutor Mentor</h3>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '0.72rem', color: '#38bdf8', background: 'rgba(56, 189, 248, 0.12)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '3px 8px', borderRadius: '12px', fontWeight: 700 }}>
+            🎤 Voice & Audio
+          </span>
+        </div>
       </div>
       
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
@@ -221,6 +200,32 @@ export default function AITutor({ activeTab, currentError }) {
         ))}
         {loading && <div style={{ alignSelf: 'flex-start', color: 'var(--text-secondary)' }}>AI is thinking...</div>}
         <div ref={chatEndRef} />
+      </div>
+
+      {/* Quick Prompt Pills for Instant Asking */}
+      <div style={{ padding: '8px 14px', display: 'flex', gap: '8px', overflowX: 'auto', whiteSpace: 'nowrap', borderTop: '1px solid rgba(255,255,255,0.06)', scrollbarWidth: 'none' }}>
+        {QUICK_QUESTIONS.map((q, idx) => (
+          <button
+            key={idx}
+            type="button"
+            onClick={() => handleQuickAsk(q)}
+            style={{
+              background: 'rgba(56, 189, 248, 0.1)',
+              border: '1px solid rgba(56, 189, 248, 0.25)',
+              color: '#93c5fd',
+              padding: '4px 10px',
+              borderRadius: '14px',
+              fontSize: '0.74rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+              transition: 'all 0.15s ease'
+            }}
+          >
+            💬 {q}
+          </button>
+        ))}
       </div>
 
       <form onSubmit={handleAsk} style={{ 

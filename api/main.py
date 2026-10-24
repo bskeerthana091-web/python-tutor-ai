@@ -5,14 +5,14 @@ from fastapi.responses import FileResponse
 import os
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
-from typing import Dict, List
+from typing import Dict, List, Optional
 import json
 import asyncio
 import ast
 import datetime as dt
 
 from database import get_db, Student, Submission, Progress, CompletedChallenge, CompletedQuest
-from sandbox import execute_code, execute_code_with_test_cases, trace_code_execution
+from sandbox import execute_code, execute_code_with_test_cases, trace_code_execution, analyze_code
 from plagiarism import PlagiarismDetector, get_embedding, cosine_similarity
 import numpy as np
 from pydantic import BaseModel
@@ -105,6 +105,10 @@ class ProgressRequest(BaseModel):
     time_spent: int
     mistakes: int
 
+class CodeAnalysisRequest(BaseModel):
+    code: str
+    error: Optional[str] = None
+
 # --- API Endpoints ---
 
 @app.get("/")
@@ -167,9 +171,137 @@ def explain_topic(topic: str, level: str):
     return {"explanation": f"Explaining {topic} at {level} level."}
 
 @app.post("/analyze")
-def analyze_code_req(code: str, error: str):
-    # Pass code and error to AI model to get suggestion
-    return {"suggestion": "Check line 4. It looks like you missed a colon at the end of the if statement."}
+def analyze_code_deep(req: CodeAnalysisRequest):
+    code = req.code or ""
+    error = req.error or ""
+    
+    # 1. Parse AST
+    syntax_error = None
+    tree = None
+    try:
+        tree = ast.parse(code)
+    except SyntaxError as e:
+        syntax_error = {
+            "line": e.lineno,
+            "offset": e.offset,
+            "message": e.msg,
+            "text": e.text.strip() if e.text else ""
+        }
+    
+    # 2. Security Violations check
+    violations = analyze_code(code) if not syntax_error else []
+    
+    # 3. Code Metrics
+    lines = code.splitlines()
+    total_lines = len(lines)
+    code_lines = len([l for l in lines if l.strip() and not l.strip().startswith('#')])
+    comment_lines = len([l for l in lines if l.strip().startswith('#')])
+    blank_lines = len([l for l in lines if not l.strip()])
+    
+    # 4. AST Symbol Extraction
+    functions = []
+    classes = []
+    variables = set()
+    loops = 0
+    conditionals = 0
+    returns = 0
+    
+    if tree:
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                args = [a.arg for a in node.args.args]
+                doc = ast.get_docstring(node)
+                functions.append({
+                    "name": node.name,
+                    "args": args,
+                    "has_docstring": bool(doc),
+                    "line": node.lineno
+                })
+            elif isinstance(node, ast.ClassDef):
+                classes.append({
+                    "name": node.name,
+                    "line": node.lineno
+                })
+            elif isinstance(node, (ast.For, ast.While)):
+                loops += 1
+            elif isinstance(node, (ast.If,)):
+                conditionals += 1
+            elif isinstance(node, ast.Return):
+                returns += 1
+            elif isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        variables.add(target.id)
+    
+    # 5. Complexity Calculation
+    cyclomatic_complexity = 1 + loops + conditionals
+    if cyclomatic_complexity <= 2:
+        complexity_label = "Low (Simple / Constant O(1))"
+        complexity_color = "#10b981"
+    elif cyclomatic_complexity <= 5:
+        complexity_label = "Moderate (O(N) - Branching / Loops)"
+        complexity_color = "#3b82f6"
+    else:
+        complexity_label = "High (O(N²) - Nested Decisions)"
+        complexity_color = "#f59e0b"
+        
+    # 6. Quality Score & Recommendations
+    quality_score = 100
+    recommendations = []
+    
+    if syntax_error:
+        quality_score -= 40
+        recommendations.append(f"Fix Syntax Error at line {syntax_error['line']}: {syntax_error['message']}.")
+    if error:
+        quality_score -= 25
+        recommendations.append(f"Resolve runtime exception: {error.splitlines()[-1] if error else 'Runtime Error'}.")
+    if violations:
+        quality_score -= 50
+        recommendations.append(f"Security Warning: {violations[0]}.")
+        
+    if total_lines > 0:
+        if comment_lines == 0 and code_lines > 3:
+            quality_score -= 5
+            recommendations.append("Add explanatory comments or docstrings for better code documentation.")
+            
+        for fn in functions:
+            if not fn["has_docstring"]:
+                recommendations.append(f"Function '{fn['name']}' could include a docstring describing its arguments and return value.")
+                
+        if returns == 0 and functions:
+            recommendations.append("Your defined functions currently lack explicit return statements (will return None).")
+            
+    if not recommendations:
+        recommendations.append("Clean and well-structured code! Follows standard Python conventions.")
+        
+    quality_score = max(10, min(100, quality_score))
+    
+    return {
+        "syntax_valid": syntax_error is None,
+        "syntax_error": syntax_error,
+        "security_safe": len(violations) == 0,
+        "security_violations": violations,
+        "metrics": {
+            "total_lines": total_lines,
+            "code_lines": code_lines,
+            "comment_lines": comment_lines,
+            "blank_lines": blank_lines,
+            "num_functions": len(functions),
+            "num_classes": len(classes),
+            "num_loops": loops,
+            "num_conditionals": conditionals,
+            "cyclomatic_complexity": cyclomatic_complexity,
+            "complexity_label": complexity_label,
+            "complexity_color": complexity_color,
+            "quality_score": quality_score
+        },
+        "symbols": {
+            "functions": functions,
+            "classes": classes,
+            "variables": sorted(list(variables))
+        },
+        "recommendations": recommendations
+    }
 
 @app.post("/execute")
 def execute_python(req: CodeExecutionRequest, db: Session = Depends(get_db)):

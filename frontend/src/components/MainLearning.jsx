@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CodeEditor from './CodeEditor.jsx';
 import AITutor from './AITutor.jsx';
+import CodeAnalysis from './CodeAnalysis.jsx';
 import InteractiveVisualizer from './InteractiveVisualizer.jsx';
 import AdaptiveQuiz from './AdaptiveQuiz.jsx';
 import CodeExplainer from './CodeExplainer.jsx';
@@ -481,12 +482,23 @@ export default function MainLearning() {
           <AdaptiveQuiz onQuizCompleted={() => setActiveTab('lessons')} />
         )}
         
-        {(activeTab === 'ai' || activeTab === 'analysis') && (
-          <AITutor 
-            activeTab={activeTab} 
+        {activeTab === 'ai' && (
+          <AITutor />
+        )}
+
+        {activeTab === 'analysis' && (
+          <CodeAnalysis 
+            code={code} 
             currentError={currentError} 
+            onJumpToEditor={() => {
+              const editorElem = document.getElementById('code-editor-panel');
+              if (editorElem) {
+                editorElem.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
           />
         )}
+
         {activeTab === 'explain' && (
           <CodeExplainer code={code} />
         )}
