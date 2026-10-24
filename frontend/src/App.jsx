@@ -48,173 +48,183 @@ function NavBar({ user, onLogout }) {
 
   return (
     <>
-      <nav className="nav-bar" style={{ padding: '10px 16px', position: 'sticky', top: 0, zIndex: 1000, background: '#111827', borderBottom: '1px solid var(--border)' }}>
-        {/* Brand & Dynamic Back Button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {location.pathname !== '/learn' && (
+      <nav className="nav-bar" style={{ padding: '8px 14px', position: 'sticky', top: 0, zIndex: 1000, background: '#111827', borderBottom: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        {/* Top Header Row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          {/* Brand & Dynamic Back Button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {location.pathname !== '/learn' && (
+              <Link 
+                to="/learn" 
+                title="Back to Lessons"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  background: 'rgba(59, 130, 246, 0.2)',
+                  border: '1px solid rgba(59, 130, 246, 0.45)',
+                  color: '#38bdf8',
+                  padding: '4px 10px',
+                  borderRadius: '8px',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <span>←</span>
+                <span>Back</span>
+              </Link>
+            )}
+
+            <Link to="/learn" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
+              <img src="/logo.png" alt="PyAI Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
+              <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, background: 'linear-gradient(135deg, #e2e8f0, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', whiteSpace: 'nowrap' }}>
+                PyAI Tutor
+              </h2>
+            </Link>
+          </div>
+
+          {/* Desktop Nav Links (Visible on full screen > 900px) */}
+          <div className="nav-links-desktop" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {navItems.map(item => {
+              const isActive = location.pathname === item.to;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  style={{
+                    color: isActive ? '#38bdf8' : 'var(--text-secondary)',
+                    textDecoration: 'none',
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: '0.88rem',
+                    whiteSpace: 'nowrap',
+                    padding: '5px 10px',
+                    borderRadius: '6px',
+                    background: isActive ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+                    border: isActive ? '1px solid rgba(56, 189, 248, 0.25)' : '1px solid transparent',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Right User Controls */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {/* Avatar Profile Link */}
             <Link 
-              to="/learn" 
-              title="Back to Lessons"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                background: 'rgba(59, 130, 246, 0.2)',
-                border: '1px solid rgba(59, 130, 246, 0.45)',
-                color: '#38bdf8',
-                padding: '4px 10px',
-                borderRadius: '8px',
-                fontSize: '0.82rem',
-                fontWeight: 700,
+              to="/gamification" 
+              title="Profile & Achievements"
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
                 textDecoration: 'none',
-                whiteSpace: 'nowrap'
+                padding: '3px 8px',
+                borderRadius: '20px',
+                background: location.pathname === '/gamification' ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.12)',
+                border: location.pathname === '/gamification' ? '1.5px solid #3b82f6' : '1px solid rgba(59, 130, 246, 0.35)',
+                transition: 'all 0.2s ease'
               }}
             >
-              <span>←</span>
-              <span>Back</span>
+              <span className="user-name-desktop" style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {displayName}
+              </span>
+              <div style={{ 
+                width: '28px', 
+                height: '28px', 
+                borderRadius: '50%', 
+                background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                color: 'white', 
+                fontWeight: 800, 
+                fontSize: '0.85rem', 
+                border: '1.5px solid rgba(255,255,255,0.25)',
+                boxShadow: '0 0 8px rgba(59, 130, 246, 0.4)'
+              }}>
+                {initials}
+              </div>
             </Link>
-          )}
 
-          <Link to="/learn" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-            <img src="/logo.png" alt="PyAI Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
-            <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, background: 'linear-gradient(135deg, #e2e8f0, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', whiteSpace: 'nowrap' }}>
-              PyAI Tutor
-            </h2>
-          </Link>
+            {/* Logout Button */}
+            <button 
+              onClick={onLogout} 
+              title="Click to logout"
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '4px', 
+                background: '#dc2626', 
+                border: '1px solid #ef4444', 
+                color: '#ffffff', 
+                padding: '5px 10px', 
+                borderRadius: '6px', 
+                cursor: 'pointer', 
+                fontSize: '0.8rem', 
+                fontWeight: 700, 
+                boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)'
+              }}
+            >
+              <span>❌</span>
+              <span className="logout-text-desktop">Logout</span>
+            </button>
+
+            {/* Mobile Hamburger Toggle Button */}
+            <button
+              className="nav-mobile-toggle"
+              onClick={() => setMobileMenuOpen(prev => !prev)}
+              aria-label="Toggle Navigation Menu"
+              style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: '#ffffff',
+                padding: '6px 10px',
+                borderRadius: '6px',
+                fontSize: '1.2rem',
+                cursor: 'pointer',
+                lineHeight: 1
+              }}
+            >
+              {mobileMenuOpen ? '✕' : '☰'}
+            </button>
+          </div>
         </div>
 
-        {/* Desktop Nav Links (Hidden on mobile via CSS) */}
-        <div className="nav-links-desktop" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          {navItems.slice(0, 6).map(item => {
+        {/* Responsive Horizontal Navigation Ribbon (ALWAYS visible on half-screen & mobile) */}
+        <div className="nav-links-mobile-ribbon">
+          {navItems.map(item => {
             const isActive = location.pathname === item.to;
             return (
               <Link
                 key={item.to}
                 to={item.to}
                 style={{
-                  color: isActive ? '#38bdf8' : 'var(--text-secondary)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  color: isActive ? '#38bdf8' : '#cbd5e1',
+                  background: isActive ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                  border: isActive ? '1.5px solid rgba(56, 189, 248, 0.6)' : '1px solid rgba(255, 255, 255, 0.1)',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
                   textDecoration: 'none',
-                  fontWeight: isActive ? 700 : 500,
-                  fontSize: '0.88rem',
+                  fontSize: '0.82rem',
+                  fontWeight: isActive ? 700 : 600,
                   whiteSpace: 'nowrap',
-                  padding: '5px 10px',
-                  borderRadius: '6px',
-                  background: isActive ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
-                  border: isActive ? '1px solid rgba(56, 189, 248, 0.25)' : '1px solid transparent',
-                  transition: 'all 0.2s'
+                  flexShrink: 0,
+                  transition: 'all 0.2s ease',
+                  boxShadow: isActive ? '0 0 10px rgba(56, 189, 248, 0.25)' : 'none'
                 }}
               >
                 {item.label}
               </Link>
             );
           })}
-        </div>
-
-        {/* Right User Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {/* Always Visible Daily Challenge Button (Desktop, Half-Screen, Mobile) */}
-          <Link
-            to="/daily"
-            title="Today's Python Daily Challenge (+100 XP)"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '5px',
-              background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.22), rgba(245, 158, 11, 0.28))',
-              border: '1.5px solid rgba(245, 158, 11, 0.65)',
-              color: '#fef08a',
-              padding: '4px 10px',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              whiteSpace: 'nowrap',
-              boxShadow: '0 0 10px rgba(234, 179, 8, 0.25)',
-              transition: 'all 0.2s'
-            }}
-          >
-            <span>🎯</span>
-            <span style={{ fontWeight: 800 }}>Daily</span>
-          </Link>
-
-          {/* Avatar Profile Link */}
-          <Link 
-            to="/gamification" 
-            title="Profile & Achievements"
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px', 
-              textDecoration: 'none',
-              padding: '3px 8px',
-              borderRadius: '20px',
-              background: location.pathname === '/gamification' ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.12)',
-              border: location.pathname === '/gamification' ? '1.5px solid #3b82f6' : '1px solid rgba(59, 130, 246, 0.35)',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <span className="user-name-desktop" style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', maxWidth: '120px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {displayName}
-            </span>
-            <div style={{ 
-              width: '28px', 
-              height: '28px', 
-              borderRadius: '50%', 
-              background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              color: 'white', 
-              fontWeight: 800, 
-              fontSize: '0.85rem', 
-              border: '1.5px solid rgba(255,255,255,0.25)',
-              boxShadow: '0 0 8px rgba(59, 130, 246, 0.4)'
-            }}>
-              {initials}
-            </div>
-          </Link>
-
-          {/* Logout Button */}
-          <button 
-            onClick={onLogout} 
-            title="Click to logout"
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '4px', 
-              background: '#dc2626', 
-              border: '1px solid #ef4444', 
-              color: '#ffffff', 
-              padding: '5px 10px', 
-              borderRadius: '6px', 
-              cursor: 'pointer', 
-              fontSize: '0.8rem', 
-              fontWeight: 700, 
-              boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)'
-            }}
-          >
-            <span>❌</span>
-            <span className="logout-text-desktop">Logout</span>
-          </button>
-
-          {/* Mobile Hamburger Toggle Button */}
-          <button
-            className="nav-mobile-toggle"
-            onClick={() => setMobileMenuOpen(prev => !prev)}
-            aria-label="Toggle Navigation Menu"
-            style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.15)',
-              color: '#ffffff',
-              padding: '6px 10px',
-              borderRadius: '6px',
-              fontSize: '1.2rem',
-              cursor: 'pointer',
-              lineHeight: 1
-            }}
-          >
-            {mobileMenuOpen ? '✕' : '☰'}
-          </button>
         </div>
       </nav>
 

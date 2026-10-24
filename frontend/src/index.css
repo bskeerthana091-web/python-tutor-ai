@@ -177,16 +177,39 @@ body {
   flex-wrap: wrap;
 }
 
-/* Responsive Mobile Rules */
-@media (max-width: 768px) {
+/* Ribbon hidden by default on full desktop screens */
+.nav-links-mobile-ribbon {
+  display: none;
+}
+
+/* Responsive Mobile & Half-Screen Rules (<= 900px) */
+@media (max-width: 900px) {
   .nav-bar {
-    padding: 10px 14px !important;
+    padding: 8px 12px !important;
   }
 
   .nav-links-desktop,
   .user-name-desktop,
   .logout-text-desktop {
     display: none !important;
+  }
+
+  /* Always keep Daily Challenge, Interview, Leaderboard, Analytics, Resume visible in scrollable ribbon */
+  .nav-links-mobile-ribbon {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 6px 2px 2px 2px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .nav-links-mobile-ribbon::-webkit-scrollbar {
+    display: none;
   }
 
   .nav-mobile-toggle {
